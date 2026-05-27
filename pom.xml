@@ -125,6 +125,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.28.0</version> 
+				<configuration>
+					<consoleOutput>true</consoleOutput>
+					<failOnViolation>true</failOnViolation>
+					<failurePriority>3</failurePriority>
+					<rulesets>
+						<ruleset>${project.basedir}/src/main/resources/pmd-rules.xml</ruleset>
+					</rulesets>
+                	<includeTests>false</includeTests>
+            	</configuration>
+				<executions>
+					<execution>
+						<id>pmd-check</id>
+						<phase>verify</phase> <goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+        	</plugin>
 		</plugins>
 	</build>
 
