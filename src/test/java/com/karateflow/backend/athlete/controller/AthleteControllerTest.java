@@ -1,0 +1,83 @@
+package com.karateflow.backend.athlete.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
+import com.karateflow.backend.athlete.dto.response.AthleteResponse;
+import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(AthleteController.class)
+class AthleteControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
+    @MockitoBean
+    private RecordAthleteUseCase useCase;
+
+    @Test
+    void shouldRecordAthleteSuccessfully() throws Exception {
+        // Given
+        final RecordAthleteRequest request = RecordAthleteRequest.builder()
+                .firstName("Mario")
+                .lastName("Rossi")
+                .birthDate(LocalDate.of(2010, 5, 15))
+                .referenceContact("+39 333 1234567")
+                .medicalNotes("None")
+                .build();
+
+        final AthleteResponse response = AthleteResponse.builder()
+                .athleteId("123")
+                .firstName("Mario")
+                .lastName("Rossi")
+                .birthDate(LocalDate.of(2010, 5, 15))
+                .referenceContact("+39 333 1234567")
+                .medicalNotes("None")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(useCase.execute(any(RecordAthleteRequest.class))).thenReturn(response);
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/athletes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.athleteId").value("123"))
+                .andExpect(jsonPath("$.firstName").value("Mario"))
+                .andExpect(jsonPath("$.lastName").value("Rossi"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenMandatoryFieldsAreMissing() throws Exception {
+        // Given
+        final RecordAthleteRequest request = RecordAthleteRequest.builder()
+                .firstName("") // Invalid: blank
+                .lastName("Rossi")
+                .birthDate(null) // Invalid: null
+                .build();
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/athletes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+}
