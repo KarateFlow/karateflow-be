@@ -1,5 +1,6 @@
 package com.karateflow.backend;
 
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,25 +10,31 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
 public abstract class BaseIntegrationTest {
 
     @Container
-    protected static final MongoDBContainer MONGO_DB_CONTAINER = new MongoDBContainer(DockerImageName.parse("mongo:7.0"));
+    protected static final MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0");
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
+    }
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private MongoTemplate mongoTemplate; // Iniettiamo il template per manipolare il DB di test
 
     @BeforeEach
     void cleanDatabase() {
-        mongoTemplate.getCollectionNames().forEach(mongoTemplate::dropCollection);
-    }
-
-    @DynamicPropertySource
-    static void setProperties(final DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", MONGO_DB_CONTAINER::getReplicaSetUrl);
+        // Recupera i nomi di tutte le collezioni esistenti nel Mongo temporaneo
+        for (String collectionName : mongoTemplate.getCollectionNames()) {
+            // Escludiamo le collezioni di sistema interne di MongoDB
+            if (!collectionName.startsWith("system.")) {
+                // Svuota la collezione eliminando tutti i documenti, preservando gli indici
+                mongoTemplate.getCollection(collectionName).deleteMany(new Document());
+            }
+        }
     }
 }
