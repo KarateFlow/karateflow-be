@@ -5,9 +5,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
+import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
+import com.karateflow.backend.common.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(AthleteController.class)
+@Import(GlobalExceptionHandler.class)
 class AthleteControllerTest {
 
     @Autowired
@@ -79,5 +83,27 @@ class AthleteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnConflictWhenAthleteAlreadyExists() throws Exception {
+        // Given
+        final RecordAthleteRequest request = RecordAthleteRequest.builder()
+                .firstName("Mario")
+                .lastName("Rossi")
+                .birthDate(LocalDate.of(2010, 5, 15))
+                .referenceContact("+39 333 1234567")
+                .medicalNotes("None")
+                .build();
+
+        when(useCase.execute(any(RecordAthleteRequest.class)))
+                .thenThrow(new AthleteAlreadyExistsException("Mario", "Rossi"));
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/athletes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.title").value("Athlete Conflict"));
     }
 }
