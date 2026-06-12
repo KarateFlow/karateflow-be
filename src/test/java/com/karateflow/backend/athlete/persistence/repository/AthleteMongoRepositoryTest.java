@@ -1,16 +1,9 @@
 package com.karateflow.backend.athlete.persistence.repository;
 
+import com.karateflow.backend.BaseIntegrationTest;
 import com.karateflow.backend.athlete.persistence.document.AthleteDocument;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.time.LocalDate;
 
@@ -18,18 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@Testcontainers
-@Disabled("Requires an active Docker daemon for Testcontainers. Will run in Jenkins CI.")
-class AthleteMongoRepositoryTest {
-
-    @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:6.0"));
-
-    @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
+class AthleteMongoRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     private AthleteMongoRepository repository;

@@ -16,9 +16,11 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({AthleteAlreadyExistsException.class, DuplicateKeyException.class})
-    public ProblemDetail handleAthleteAlreadyExistsException(Exception ex) {
-        log.warn("Athlete already exists conflict: {}", ex.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Athlete already exists in the system");
+    public ProblemDetail handleAthleteAlreadyExistsException(final Exception exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Athlete already exists conflict: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Athlete already exists in the system");
         problemDetail.setTitle("Athlete Conflict");
         problemDetail.setType(URI.create("https://karateflow.com/errors/athlete-already-exists"));
         problemDetail.setProperty("timestamp", Instant.now());
@@ -26,22 +28,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
-        log.warn("Validation failed for request: {}", ex.getBindingResult().getAllErrors());
-        String detail = ex.getBindingResult().getFieldErrors().stream()
+    public ProblemDetail handleValidationException(final MethodArgumentNotValidException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Validation failed for request: {}", exception.getBindingResult().getAllErrors());
+        }
+        final String detail = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .reduce("", (a, b) -> a + "; " + b);
         
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed: " + detail);
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed: " + detail);
         problemDetail.setTitle("Invalid Request Content");
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGeneralException(Exception ex) {
-        log.error("Unexpected error occurred", ex);
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+    public ProblemDetail handleGeneralException(final Exception exception) {
+        if (log.isErrorEnabled()) {
+            log.error("Unexpected error occurred", exception);
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         problemDetail.setTitle("Internal Server Error");
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;

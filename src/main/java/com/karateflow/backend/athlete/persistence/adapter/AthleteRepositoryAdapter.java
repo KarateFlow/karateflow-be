@@ -29,7 +29,7 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
                     throw new AthleteAlreadyExistsException(athlete.getFirstName(), athlete.getLastName());
                 });
 
-        AthleteDocument document = athleteMapper.toDocument(athlete);
+        final AthleteDocument document = athleteMapper.toDocument(athlete);
         if (document.getAthleteId() == null) {
             document.setAthleteId(new ObjectId().toHexString());
         }
@@ -37,7 +37,7 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
             document.setCreatedAt(LocalDateTime.now());
         }
 
-        AthleteDocument savedDocument = mongoRepository.save(document);
+        final AthleteDocument savedDocument = mongoRepository.save(document);
         return athleteMapper.toDomain(savedDocument);
     }
 
