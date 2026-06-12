@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/athletes")
 @RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class AthleteController {
 
     private final RecordAthleteUseCase useCase;
@@ -22,6 +23,9 @@ public class AthleteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AthleteResponse recordAthlete(@Valid @RequestBody final RecordAthleteRequest request) {
-        return useCase.execute(request);
+        log.info("Received request to record athlete: {} {}", request.getFirstName(), request.getLastName());
+        AthleteResponse response = useCase.execute(request);
+        log.info("Athlete recorded successfully with ID: {}", response.getAthleteId());
+        return response;
     }
 }

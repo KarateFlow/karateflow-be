@@ -5,9 +5,12 @@ import com.karateflow.backend.athlete.domain.port.AthleteRepository;
 import com.karateflow.backend.athlete.mapper.AthleteMapper;
 import com.karateflow.backend.athlete.persistence.document.AthleteDocument;
 import com.karateflow.backend.athlete.persistence.repository.AthleteMongoRepository;
+import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,14 +24,32 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
 
     @Override
     public Athlete save(final Athlete athlete) {
-        final AthleteDocument document = athleteMapper.toDocument(athlete);
-        final AthleteDocument savedDocument = mongoRepository.save(document);
+        mongoRepository.findByFirstNameAndLastName(athlete.getFirstName(), athlete.getLastName())
+                .ifPresent(existing -> {
+                    throw new AthleteAlreadyExistsException(athlete.getFirstName(), athlete.getLastName());
+                });
+
+        AthleteDocument document = athleteMapper.toDocument(athlete);
+        if (document.getAthleteId() == null) {
+            document.setAthleteId(new ObjectId().toHexString());
+        }
+        if (document.getCreatedAt() == null) {
+            document.setCreatedAt(LocalDateTime.now());
+        }
+
+        AthleteDocument savedDocument = mongoRepository.save(document);
         return athleteMapper.toDomain(savedDocument);
     }
 
     @Override
     public Optional<Athlete> findById(final String athleteId) {
         return mongoRepository.findById(athleteId)
+                .map(athleteMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Athlete> findByFirstNameAndLastName(final String firstName, final String lastName) {
+        return mongoRepository.findByFirstNameAndLastName(firstName, lastName)
                 .map(athleteMapper::toDomain);
     }
 
