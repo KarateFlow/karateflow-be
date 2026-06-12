@@ -23,9 +23,13 @@ public class AthleteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AthleteResponse recordAthlete(@Valid @RequestBody final RecordAthleteRequest request) {
-        log.info("Received request to record athlete: {} {}", request.getFirstName(), request.getLastName());
-        AthleteResponse response = useCase.execute(request);
-        log.info("Athlete recorded successfully with ID: {}", response.getAthleteId());
+        if (log.isInfoEnabled()) {
+            log.info("Received request to record athlete: {} {}", request.getFirstName(), request.getLastName());
+        }
+        final AthleteResponse response = useCase.execute(request);
+        if (log.isInfoEnabled()) {
+            log.info("Athlete recorded successfully with ID: {}", response.getAthleteId());
+        }
         return response;
     }
 }

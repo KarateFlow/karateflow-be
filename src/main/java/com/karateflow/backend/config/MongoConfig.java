@@ -23,10 +23,10 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://admin:password@localhost:27017/karateflow_db?authSource=admin");
-        MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+        final ConnectionString connectionString = new ConnectionString("mongodb://admin:password@localhost:27017/karateflow_db?authSource=admin");
+        final MongoClientSettings settings = MongoClientSettings.builder()
             .applyConnectionString(connectionString)
             .build();
-        return MongoClients.create(mongoClientSettings);
+        return MongoClients.create(settings);
     }
 }
