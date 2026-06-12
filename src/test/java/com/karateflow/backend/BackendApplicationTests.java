@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @Testcontainers
-class BackendApplicationTests {
+class BackendApplicationTests extends BaseIntegrationTest {
 
     @Container
     static final MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0");

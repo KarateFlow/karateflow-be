@@ -1,7 +1,7 @@
 package com.karateflow.backend;
 
-import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -20,19 +20,24 @@ public abstract class BaseIntegrationTest {
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
+        // 1. Iniettiamo l'URI dinamico con la porta corretta assegnata da Testcontainers
         registry.add("spring.data.mongodb.uri", mongoContainer::getReplicaSetUrl);
+        
+        // 2. BLINDARE IL CONTESTO: Sovrascriviamo e azzeriamo i vecchi parametri statici
+        // Questo impedisce a Spring Boot di cercare "localhost:27017" o l'utente "admin"
+        registry.add("spring.data.mongodb.host", () -> null);
+        registry.add("spring.data.mongodb.port", () -> null);
+        registry.add("spring.data.mongodb.username", () -> null);
+        registry.add("spring.data.mongodb.password", () -> null);
     }
 
     @Autowired
-    private MongoTemplate mongoTemplate; // Iniettiamo il template per manipolare il DB di test
+    private MongoTemplate mongoTemplate;
 
     @BeforeEach
     void cleanDatabase() {
-        // Recupera i nomi di tutte le collezioni esistenti nel Mongo temporaneo
         for (String collectionName : mongoTemplate.getCollectionNames()) {
-            // Escludiamo le collezioni di sistema interne di MongoDB
             if (!collectionName.startsWith("system.")) {
-                // Svuota la collezione eliminando tutti i documenti, preservando gli indici
                 mongoTemplate.getCollection(collectionName).deleteMany(new Document());
             }
         }
