@@ -12,8 +12,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -49,5 +51,25 @@ class AthleteRepositoryAdapterTest {
 
         assertThrows(AthleteAlreadyExistsException.class, () -> adapter.save(athlete));
         verify(mongoRepository, never()).save(any(AthleteDocument.class));
+    }
+
+    @Test
+    void shouldReturnAllAthletes() {
+        // Given
+        final AthleteDocument doc1 = AthleteDocument.builder().athleteId("1").build();
+        final AthleteDocument doc2 = AthleteDocument.builder().athleteId("2").build();
+        final Athlete a1 = Athlete.builder().athleteId("1").build();
+        final Athlete a2 = Athlete.builder().athleteId("2").build();
+
+        when(mongoRepository.findAll()).thenReturn(List.of(doc1, doc2));
+        when(athleteMapper.toDomain(doc1)).thenReturn(a1);
+        when(athleteMapper.toDomain(doc2)).thenReturn(a2);
+
+        // When
+        final List<Athlete> result = adapter.findAll();
+
+        // Then
+        assertThat(result).hasSize(2).containsExactly(a1, a2);
+        verify(mongoRepository).findAll();
     }
 }
