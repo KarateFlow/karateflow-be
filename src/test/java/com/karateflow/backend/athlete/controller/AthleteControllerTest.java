@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
+import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
 import com.karateflow.backend.common.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +37,10 @@ class AthleteControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @MockitoBean
-    private RecordAthleteUseCase useCase;
+    private RecordAthleteUseCase recordUseCase;
+
+    @MockitoBean
+    private RetrieveAthletesUseCase retrieveUseCase;
 
     @Test
     void shouldRecordAthleteSuccessfully() throws Exception {
@@ -57,7 +63,7 @@ class AthleteControllerTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        when(useCase.execute(any(RecordAthleteRequest.class))).thenReturn(response);
+        when(recordUseCase.execute(any(RecordAthleteRequest.class))).thenReturn(response);
 
         // When & Then
         mockMvc.perform(post("/api/v1/athletes")
@@ -67,6 +73,35 @@ class AthleteControllerTest {
                 .andExpect(jsonPath("$.athleteId").value("123"))
                 .andExpect(jsonPath("$.firstName").value("Mario"))
                 .andExpect(jsonPath("$.lastName").value("Rossi"));
+    }
+
+    @Test
+    void shouldReturnAthletesListSuccessfully() throws Exception {
+        // Given
+        final List<AthleteResponse> responseList = List.of(
+                AthleteResponse.builder()
+                        .athleteId("1")
+                        .firstName("Mario")
+                        .lastName("Rossi")
+                        .birthDate(LocalDate.of(2010, 5, 15))
+                        .build(),
+                AthleteResponse.builder()
+                        .athleteId("2")
+                        .firstName("Luigi")
+                        .lastName("Verdi")
+                        .birthDate(LocalDate.of(2011, 6, 20))
+                        .build()
+        );
+
+        when(retrieveUseCase.execute()).thenReturn(responseList);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/athletes")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].firstName").value("Mario"))
+                .andExpect(jsonPath("$[1].firstName").value("Luigi"));
     }
 
     @Test
@@ -96,7 +131,7 @@ class AthleteControllerTest {
                 .medicalNotes("None")
                 .build();
 
-        when(useCase.execute(any(RecordAthleteRequest.class)))
+        when(recordUseCase.execute(any(RecordAthleteRequest.class)))
                 .thenThrow(new AthleteAlreadyExistsException("Mario", "Rossi"));
 
         // When & Then
