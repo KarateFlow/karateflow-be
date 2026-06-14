@@ -4,7 +4,6 @@ import com.karateflow.backend.athlete.domain.model.Athlete;
 import com.karateflow.backend.athlete.domain.port.AthleteRepository;
 import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
-import com.karateflow.backend.athlete.mapper.AthleteMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class RecordAthleteUseCaseImpl implements RecordAthleteUseCase {
 
     private final AthleteRepository athleteRepository;
-    private final AthleteMapper athleteMapper;
 
     @Override
     public AthleteResponse execute(final RecordAthleteRequest request) {
