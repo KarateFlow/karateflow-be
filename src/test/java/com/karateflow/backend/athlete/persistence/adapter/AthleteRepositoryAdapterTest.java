@@ -54,6 +54,39 @@ class AthleteRepositoryAdapterTest {
     }
 
     @Test
+    void shouldAllowSavingWhenAthleteIdMatchesExistingOneDuringUpdate() {
+        final String athleteId = "existing-id";
+        final Athlete athlete = Athlete.builder()
+                .athleteId(athleteId)
+                .firstName("Mario")
+                .lastName("Rossi")
+                .build();
+
+        final AthleteDocument existingDocument = AthleteDocument.builder()
+                .athleteId(athleteId)
+                .firstName("Mario")
+                .lastName("Rossi")
+                .build();
+
+        final AthleteDocument savedDocument = AthleteDocument.builder()
+                .athleteId(athleteId)
+                .firstName("Mario")
+                .lastName("Rossi")
+                .build();
+
+        when(mongoRepository.findByFirstNameAndLastName("Mario", "Rossi")).thenReturn(Optional.of(existingDocument));
+        when(athleteMapper.toDocument(athlete)).thenReturn(existingDocument);
+        when(mongoRepository.save(any(AthleteDocument.class))).thenReturn(savedDocument);
+        when(athleteMapper.toDomain(savedDocument)).thenReturn(athlete);
+
+        final Athlete result = adapter.save(athlete);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getAthleteId()).isEqualTo(athleteId);
+        verify(mongoRepository).save(any(AthleteDocument.class));
+    }
+
+    @Test
     void shouldReturnAllAthletes() {
         // Given
         final AthleteDocument doc1 = AthleteDocument.builder().athleteId("1").build();
