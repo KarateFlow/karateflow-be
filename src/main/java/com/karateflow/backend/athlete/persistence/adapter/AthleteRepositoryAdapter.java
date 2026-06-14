@@ -26,7 +26,9 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
     public Athlete save(final Athlete athlete) {
         mongoRepository.findByFirstNameAndLastName(athlete.getFirstName(), athlete.getLastName())
                 .ifPresent(existing -> {
-                    throw new AthleteAlreadyExistsException(athlete.getFirstName(), athlete.getLastName());
+                    if (athlete.getAthleteId() == null || !existing.getAthleteId().equals(athlete.getAthleteId())) {
+                        throw new AthleteAlreadyExistsException(athlete.getFirstName(), athlete.getLastName());
+                    }
                 });
 
         final AthleteDocument document = athleteMapper.toDocument(athlete);
