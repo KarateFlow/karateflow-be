@@ -4,10 +4,12 @@ import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
 import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
+import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +48,14 @@ public class AthleteController {
             log.info("Retrieved {} athletes", response.size());
         }
         return response;
+    }
+
+    @GetMapping("/{athleteId}")
+    public AthleteResponse getAthlete(@PathVariable final String athleteId) {
+        if (log.isInfoEnabled()) {
+            log.info("Received request to retrieve athlete with ID: {}", athleteId);
+        }
+        return retrieveUseCase.execute(athleteId)
+                .orElseThrow(() -> new AthleteNotFoundException("Athlete not found with ID: " + athleteId));
     }
 }

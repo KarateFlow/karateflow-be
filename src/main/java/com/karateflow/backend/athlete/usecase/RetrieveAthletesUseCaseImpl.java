@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,5 +22,11 @@ public class RetrieveAthletesUseCaseImpl implements RetrieveAthletesUseCase {
         return athleteRepository.findAll().stream()
                 .map(athleteMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<AthleteResponse> execute(final String athleteId) {
+        return athleteRepository.findById(athleteId)
+                .map(athleteMapper::toResponse);
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -102,6 +103,40 @@ class AthleteControllerTest {
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].firstName").value("Mario"))
                 .andExpect(jsonPath("$[1].firstName").value("Luigi"));
+    }
+
+    @Test
+    void shouldReturnAthleteByIdSuccessfully() throws Exception {
+        // Given
+        final String athleteId = "123";
+        final AthleteResponse response = AthleteResponse.builder()
+                .athleteId(athleteId)
+                .firstName("Mario")
+                .lastName("Rossi")
+                .birthDate(LocalDate.of(2010, 5, 15))
+                .build();
+
+        when(retrieveUseCase.execute(athleteId)).thenReturn(Optional.of(response));
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/athletes/{athleteId}", athleteId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.athleteId").value(athleteId))
+                .andExpect(jsonPath("$.firstName").value("Mario"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenAthleteDoesNotExist() throws Exception {
+        // Given
+        final String athleteId = "999";
+        when(retrieveUseCase.execute(athleteId)).thenReturn(Optional.empty());
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/athletes/{athleteId}", athleteId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Athlete Not Found"));
     }
 
     @Test
