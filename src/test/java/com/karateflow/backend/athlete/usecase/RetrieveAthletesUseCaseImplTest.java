@@ -10,8 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -49,5 +49,38 @@ class RetrieveAthletesUseCaseImplTest {
         verify(athleteRepository).findAll();
         verify(athleteMapper).toResponse(a1);
         verify(athleteMapper).toResponse(a2);
+    }
+
+    @Test
+    void shouldSuccessfullyRetrieveAthleteById() {
+        // Given
+        final String athleteId = "123";
+        final Athlete athlete = Athlete.builder().athleteId(athleteId).firstName("Mario").build();
+        final AthleteResponse response = AthleteResponse.builder().athleteId(athleteId).firstName("Mario").build();
+
+        when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(athlete));
+        when(athleteMapper.toResponse(athlete)).thenReturn(response);
+
+        // When
+        final Optional<AthleteResponse> result = useCase.execute(athleteId);
+
+        // Then
+        assertThat(result).isPresent().contains(response);
+        verify(athleteRepository).findById(athleteId);
+        verify(athleteMapper).toResponse(athlete);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenAthleteNotFound() {
+        // Given
+        final String athleteId = "999";
+        when(athleteRepository.findById(athleteId)).thenReturn(Optional.empty());
+
+        // When
+        final Optional<AthleteResponse> result = useCase.execute(athleteId);
+
+        // Then
+        assertThat(result).isEmpty();
+        verify(athleteRepository).findById(athleteId);
     }
 }

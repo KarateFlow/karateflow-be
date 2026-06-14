@@ -1,6 +1,7 @@
 package com.karateflow.backend.common.handler;
 
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
+import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +16,20 @@ import java.time.Instant;
 @lombok.extern.slf4j.Slf4j
 public class GlobalExceptionHandler {
 
+    private static final String TIMESTAMP = "timestamp";
+
+    @ExceptionHandler(AthleteNotFoundException.class)
+    public ProblemDetail handleAthleteNotFoundException(final AthleteNotFoundException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Athlete not found: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setTitle("Athlete Not Found");
+        problemDetail.setType(URI.create("https://karateflow.com/errors/athlete-not-found"));
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
     @ExceptionHandler({AthleteAlreadyExistsException.class, DuplicateKeyException.class})
     public ProblemDetail handleAthleteAlreadyExistsException(final Exception exception) {
         if (log.isWarnEnabled()) {
@@ -23,7 +38,7 @@ public class GlobalExceptionHandler {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "Athlete already exists in the system");
         problemDetail.setTitle("Athlete Conflict");
         problemDetail.setType(URI.create("https://karateflow.com/errors/athlete-already-exists"));
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
 
@@ -38,7 +53,7 @@ public class GlobalExceptionHandler {
         
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed: " + detail);
         problemDetail.setTitle("Invalid Request Content");
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
 
@@ -49,7 +64,7 @@ public class GlobalExceptionHandler {
         }
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         problemDetail.setTitle("Internal Server Error");
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
 }
