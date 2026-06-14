@@ -1,9 +1,11 @@
 package com.karateflow.backend.athlete.controller;
 
 import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
+import com.karateflow.backend.athlete.dto.request.UpdateAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
 import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
+import com.karateflow.backend.athlete.usecase.UpdateAthleteUseCase;
 import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,6 +29,7 @@ public class AthleteController {
 
     private final RecordAthleteUseCase recordUseCase;
     private final RetrieveAthletesUseCase retrieveUseCase;
+    private final UpdateAthleteUseCase updateUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -57,5 +61,19 @@ public class AthleteController {
         }
         return retrieveUseCase.execute(athleteId)
                 .orElseThrow(() -> new AthleteNotFoundException("Athlete not found with ID: " + athleteId));
+    }
+
+    @PutMapping("/{athleteId}")
+    public AthleteResponse updateAthlete(
+            @PathVariable final String athleteId,
+            @Valid @RequestBody final UpdateAthleteRequest request) {
+        if (log.isInfoEnabled()) {
+            log.info("Received request to update athlete with ID: {}", athleteId);
+        }
+        final AthleteResponse response = updateUseCase.execute(athleteId, request);
+        if (log.isInfoEnabled()) {
+            log.info("Athlete updated successfully with ID: {}", athleteId);
+        }
+        return response;
     }
 }

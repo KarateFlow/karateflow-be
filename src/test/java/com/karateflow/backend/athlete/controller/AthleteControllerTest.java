@@ -3,9 +3,11 @@ package com.karateflow.backend.athlete.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.karateflow.backend.athlete.dto.request.RecordAthleteRequest;
+import com.karateflow.backend.athlete.dto.request.UpdateAthleteRequest;
 import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
 import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
+import com.karateflow.backend.athlete.usecase.UpdateAthleteUseCase;
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
 import com.karateflow.backend.common.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
@@ -22,9 +24,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +46,9 @@ class AthleteControllerTest {
 
     @MockitoBean
     private RetrieveAthletesUseCase retrieveUseCase;
+
+    @MockitoBean
+    private UpdateAthleteUseCase updateUseCase;
 
     @Test
     void shouldRecordAthleteSuccessfully() throws Exception {
@@ -137,6 +144,35 @@ class AthleteControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Athlete Not Found"));
+    }
+
+    @Test
+    void shouldUpdateAthleteSuccessfully() throws Exception {
+        // Given
+        final String athleteId = "123";
+        final UpdateAthleteRequest request = UpdateAthleteRequest.builder()
+                .referenceContact("New Contact")
+                .medicalNotes("New Notes")
+                .build();
+
+        final AthleteResponse response = AthleteResponse.builder()
+                .athleteId(athleteId)
+                .firstName("Mario")
+                .lastName("Rossi")
+                .referenceContact("New Contact")
+                .medicalNotes("New Notes")
+                .build();
+
+        when(updateUseCase.execute(eq(athleteId), any(UpdateAthleteRequest.class))).thenReturn(response);
+
+        // When & Then
+        mockMvc.perform(put("/api/v1/athletes/{athleteId}", athleteId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.athleteId").value(athleteId))
+                .andExpect(jsonPath("$.referenceContact").value("New Contact"))
+                .andExpect(jsonPath("$.medicalNotes").value("New Notes"));
     }
 
     @Test
