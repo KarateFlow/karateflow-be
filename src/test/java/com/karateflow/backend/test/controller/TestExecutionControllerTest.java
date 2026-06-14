@@ -8,6 +8,7 @@ import com.karateflow.backend.test.dto.request.CreateTestRequest;
 import com.karateflow.backend.test.dto.request.PerformedExerciseRequest;
 import com.karateflow.backend.test.dto.response.TestResponse;
 import com.karateflow.backend.test.usecase.RecordTestUseCase;
+import com.karateflow.backend.test.usecase.RetrieveTestsUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,6 +38,9 @@ class TestExecutionControllerTest {
 
     @MockitoBean
     private RecordTestUseCase recordUseCase;
+
+    @MockitoBean
+    private RetrieveTestsUseCase retrieveUseCase;
 
     @Test
     void shouldRecordTestSuccessfully() throws Exception {
@@ -67,6 +72,25 @@ class TestExecutionControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("test-id"))
                 .andExpect(jsonPath("$.athleteId").value("123"));
+    }
+
+    @Test
+    void shouldRetrieveTestsSuccessfully() throws Exception {
+        // Given
+        final String athleteId = "123";
+        final List<TestResponse> response = List.of(
+                TestResponse.builder().id("t1").athleteId(athleteId).build()
+        );
+
+        when(retrieveUseCase.execute(athleteId)).thenReturn(response);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/tests")
+                        .param("athleteId", athleteId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value("t1"));
     }
 
     @Test
