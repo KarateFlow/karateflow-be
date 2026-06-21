@@ -48,7 +48,7 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     public MongoClient mongoClient() {
         String uriToUse = mongoUri;
         if (uriToUse == null || uriToUse.isEmpty()) {
-            if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+            if (username != null && !username.isBlank() && password != null && !password.isBlank()) {
                 uriToUse = String.format("mongodb://%s:%s@%s:%d/%s?authSource=%s", 
                         username, password, host, port, databaseName, authSource);
             } else {
