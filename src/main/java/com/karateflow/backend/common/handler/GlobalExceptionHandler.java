@@ -3,6 +3,7 @@ package com.karateflow.backend.common.handler;
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
 import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import com.karateflow.backend.common.exception.TestExecutionNotFoundException;
+import com.karateflow.backend.common.exception.TestTemplateNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,6 +40,18 @@ public class GlobalExceptionHandler {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setTitle("Test Execution Not Found");
         problemDetail.setType(URI.create("https://karateflow.com/errors/test-execution-not-found"));
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TestTemplateNotFoundException.class)
+    public ProblemDetail handleTestTemplateNotFoundException(final TestTemplateNotFoundException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Test template not found: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setTitle("Test Template Not Found");
+        problemDetail.setType(URI.create("https://karateflow.com/errors/test-template-not-found"));
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
