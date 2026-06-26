@@ -32,8 +32,8 @@ import java.util.List;
 public class TestTemplateController {
 
     private final CreateTestTemplateUseCase createUseCase;
-    private final RetrieveTestTemplatesUseCase retrieveAllUseCase;
-    private final RetrieveTestTemplateUseCase retrieveOneUseCase;
+    private final RetrieveTestTemplatesUseCase retrieveAll;
+    private final RetrieveTestTemplateUseCase retrieveOne;
     private final UpdateTestTemplateUseCase updateUseCase;
     private final DeleteTestTemplateUseCase deleteUseCase;
 
@@ -55,7 +55,7 @@ public class TestTemplateController {
         if (log.isInfoEnabled()) {
             log.info("Received request to retrieve all test templates");
         }
-        final List<TestTemplateResponse> response = retrieveAllUseCase.execute();
+        final List<TestTemplateResponse> response = retrieveAll.execute();
         if (log.isInfoEnabled()) {
             log.info("Retrieved {} test templates", response.size());
         }
@@ -67,7 +67,7 @@ public class TestTemplateController {
         if (log.isInfoEnabled()) {
             log.info("Received request to retrieve test template details for ID: {}", templateId);
         }
-        return retrieveOneUseCase.execute(templateId)
+        return retrieveOne.execute(templateId)
                 .orElseThrow(() -> new TestTemplateNotFoundException("Test template not found with ID: " + templateId));
     }
 

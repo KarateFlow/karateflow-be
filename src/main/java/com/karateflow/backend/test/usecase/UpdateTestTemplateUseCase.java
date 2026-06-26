@@ -5,5 +5,5 @@ import com.karateflow.backend.test.dto.response.TestTemplateResponse;
 
 @FunctionalInterface
 public interface UpdateTestTemplateUseCase {
-    TestTemplateResponse execute(String id, UpdateTestTemplateRequest request);
+    TestTemplateResponse execute(String templateId, UpdateTestTemplateRequest request);
 }

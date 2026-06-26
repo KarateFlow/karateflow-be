@@ -51,10 +51,10 @@ class TestTemplateControllerTest {
     private CreateTestTemplateUseCase createUseCase;
 
     @MockitoBean
-    private RetrieveTestTemplatesUseCase retrieveAllUseCase;
+    private RetrieveTestTemplatesUseCase retrieveAll;
 
     @MockitoBean
-    private RetrieveTestTemplateUseCase retrieveOneUseCase;
+    private RetrieveTestTemplateUseCase retrieveOne;
 
     @MockitoBean
     private UpdateTestTemplateUseCase updateUseCase;
@@ -97,7 +97,7 @@ class TestTemplateControllerTest {
                 TestTemplateResponse.builder().id("template-1").name("General Test").build()
         );
 
-        when(retrieveAllUseCase.execute()).thenReturn(response);
+        when(retrieveAll.execute()).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/templates")
                         .accept(MediaType.APPLICATION_JSON))
@@ -114,7 +114,7 @@ class TestTemplateControllerTest {
                 .name("General Test")
                 .build();
 
-        when(retrieveOneUseCase.execute(templateId)).thenReturn(Optional.of(response));
+        when(retrieveOne.execute(templateId)).thenReturn(Optional.of(response));
 
         mockMvc.perform(get("/api/v1/templates/{templateId}", templateId)
                         .accept(MediaType.APPLICATION_JSON))
@@ -126,7 +126,7 @@ class TestTemplateControllerTest {
     @Test
     void shouldReturnNotFoundWhenTemplateDoesNotExist() throws Exception {
         final String templateId = "template-999";
-        when(retrieveOneUseCase.execute(templateId)).thenReturn(Optional.empty());
+        when(retrieveOne.execute(templateId)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/v1/templates/{templateId}", templateId)
                         .accept(MediaType.APPLICATION_JSON))

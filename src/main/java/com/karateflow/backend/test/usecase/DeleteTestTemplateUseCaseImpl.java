@@ -12,10 +12,10 @@ public class DeleteTestTemplateUseCaseImpl implements DeleteTestTemplateUseCase 
     private final TestTemplateRepository repository;
 
     @Override
-    public void execute(final String id) {
-        if (repository.findById(id).isEmpty()) {
-            throw new TestTemplateNotFoundException("Test template not found with ID: " + id);
+    public void execute(final String templateId) {
+        if (repository.findById(templateId).isEmpty()) {
+            throw new TestTemplateNotFoundException("Test template not found with ID: " + templateId);
         }
-        repository.deleteById(id);
+        repository.deleteById(templateId);
     }
 }

@@ -6,5 +6,5 @@ import java.util.Optional;
 
 @FunctionalInterface
 public interface RetrieveTestTemplateUseCase {
-    Optional<TestTemplateResponse> execute(String id);
+    Optional<TestTemplateResponse> execute(String templateId);
 }

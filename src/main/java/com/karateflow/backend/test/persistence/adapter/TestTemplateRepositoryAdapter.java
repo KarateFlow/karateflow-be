@@ -39,13 +39,13 @@ public class TestTemplateRepositoryAdapter implements TestTemplateRepository {
     }
 
     @Override
-    public Optional<TestTemplate> findById(final String id) {
-        return mongoRepository.findById(id)
+    public Optional<TestTemplate> findById(final String templateId) {
+        return mongoRepository.findById(templateId)
                 .map(mapper::toDomain);
     }
 
     @Override
-    public void deleteById(final String id) {
-        mongoRepository.deleteById(id);
+    public void deleteById(final String templateId) {
+        mongoRepository.deleteById(templateId);
     }
 }

@@ -16,8 +16,8 @@ public class RetrieveTestTemplateUseCaseImpl implements RetrieveTestTemplateUseC
     private final TestTemplateRepository repository;
 
     @Override
-    public Optional<TestTemplateResponse> execute(final String id) {
-        return repository.findById(id).map(this::toResponse);
+    public Optional<TestTemplateResponse> execute(final String templateId) {
+        return repository.findById(templateId).map(this::toResponse);
     }
 
     private TestTemplateResponse toResponse(final TestTemplate domain) {

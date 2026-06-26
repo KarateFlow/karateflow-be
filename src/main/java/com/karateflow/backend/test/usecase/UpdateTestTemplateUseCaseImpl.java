@@ -19,9 +19,9 @@ public class UpdateTestTemplateUseCaseImpl implements UpdateTestTemplateUseCase 
     private final TestTemplateRepository repository;
 
     @Override
-    public TestTemplateResponse execute(final String id, final UpdateTestTemplateRequest request) {
-        final TestTemplate existing = repository.findById(id)
-                .orElseThrow(() -> new TestTemplateNotFoundException("Test template not found with ID: " + id));
+    public TestTemplateResponse execute(final String templateId, final UpdateTestTemplateRequest request) {
+        final TestTemplate existing = repository.findById(templateId)
+                .orElseThrow(() -> new TestTemplateNotFoundException("Test template not found with ID: " + templateId));
 
         existing.setName(request.getName());
         existing.setDescription(request.getDescription());

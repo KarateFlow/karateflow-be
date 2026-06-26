@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface TestTemplateRepository {
     TestTemplate save(TestTemplate testTemplate);
     List<TestTemplate> findAll();
-    Optional<TestTemplate> findById(String id);
-    void deleteById(String id);
+    Optional<TestTemplate> findById(String templateId);
+    void deleteById(String templateId);
 }
