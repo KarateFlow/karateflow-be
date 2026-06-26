@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,5 +36,16 @@ public class TestExecutionRepositoryAdapter implements TestExecutionRepository {
         return mongoRepository.findByAthleteIdOrderByExecutionDateDesc(athleteId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<TestExecution> findById(final String testId) {
+        return mongoRepository.findById(testId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public void deleteById(final String testId) {
+        mongoRepository.deleteById(testId);
     }
 }

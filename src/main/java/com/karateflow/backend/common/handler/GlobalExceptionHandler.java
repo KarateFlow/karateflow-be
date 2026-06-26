@@ -2,6 +2,7 @@ package com.karateflow.backend.common.handler;
 
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
 import com.karateflow.backend.common.exception.AthleteNotFoundException;
+import com.karateflow.backend.common.exception.TestExecutionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,6 +27,18 @@ public class GlobalExceptionHandler {
         final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
         problemDetail.setTitle("Athlete Not Found");
         problemDetail.setType(URI.create("https://karateflow.com/errors/athlete-not-found"));
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TestExecutionNotFoundException.class)
+    public ProblemDetail handleTestExecutionNotFoundException(final TestExecutionNotFoundException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Test execution not found: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setTitle("Test Execution Not Found");
+        problemDetail.setType(URI.create("https://karateflow.com/errors/test-execution-not-found"));
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
