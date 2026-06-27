@@ -56,6 +56,18 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(com.karateflow.backend.common.exception.ReportNotFoundException.class)
+    public ProblemDetail handleReportNotFoundException(final com.karateflow.backend.common.exception.ReportNotFoundException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Report not found: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problemDetail.setTitle("Report Not Found");
+        problemDetail.setType(URI.create("https://karateflow.com/errors/report-not-found"));
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
     @ExceptionHandler({AthleteAlreadyExistsException.class, DuplicateKeyException.class})
     public ProblemDetail handleAthleteAlreadyExistsException(final Exception exception) {
         if (log.isWarnEnabled()) {
