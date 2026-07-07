@@ -95,6 +95,17 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingServletRequestParameterException(final org.springframework.web.bind.MissingServletRequestParameterException exception) {
+        if (log.isWarnEnabled()) {
+            log.warn("Missing required request parameter: {}", exception.getMessage());
+        }
+        final ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problemDetail.setTitle("Missing Request Parameter");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGeneralException(final Exception exception) {
         if (log.isErrorEnabled()) {
