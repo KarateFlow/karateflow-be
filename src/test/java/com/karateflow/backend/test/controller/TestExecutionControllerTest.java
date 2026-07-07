@@ -215,4 +215,42 @@ class TestExecutionControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Test Execution Not Found"));
     }
+
+    @Test
+    void shouldReturnBadRequestWhenAthleteIdParameterIsMissing() throws Exception {
+        mockMvc.perform(get("/api/v1/tests")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Missing Request Parameter"));
+    }
+
+    @Test
+    void shouldAcceptResultOfZero() throws Exception {
+        // Given
+        final CreateTestRequest request = CreateTestRequest.builder()
+                .athleteId("123")
+                .executionDate(LocalDateTime.now())
+                .exercises(List.of(
+                        PerformedExerciseRequest.builder()
+                                .exerciseTitle("Test")
+                                .result(0.0)
+                                .unit(MeasurementUnit.CM)
+                                .greaterIsBetter(true)
+                                .build()
+                ))
+                .build();
+
+        final TestResponse response = TestResponse.builder()
+                .id("test-id")
+                .athleteId("123")
+                .build();
+
+        when(recordUseCase.execute(any(CreateTestRequest.class))).thenReturn(response);
+
+        // When & Then
+        mockMvc.perform(post("/api/v1/tests")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+    }
 }
