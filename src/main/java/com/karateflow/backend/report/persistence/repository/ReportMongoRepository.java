@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ReportMongoRepository extends MongoRepository<ReportDocument, String> {
     List<ReportDocument> findByAthleteIdOrderByCreatedAtDesc(String athleteId);
+    List<ReportDocument> findTop5ByOrderByCreatedAtDesc();
 }

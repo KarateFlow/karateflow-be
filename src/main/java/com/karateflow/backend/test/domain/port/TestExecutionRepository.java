@@ -10,4 +10,6 @@ public interface TestExecutionRepository {
     List<TestExecution> findByAthleteId(String athleteId);
     Optional<TestExecution> findById(String testId);
     void deleteById(String testId);
+    long count();
+    List<TestExecution> findTop5ByOrderByExecutionDateDesc();
 }

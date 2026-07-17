@@ -39,9 +39,9 @@ public class TestExecutionMapper {
                 .executionDate(document.getExecutionDate())
                 .type(document.getType())
                 .coachNotes(document.getCoachNotes())
-                .exercises(document.getExercises().stream()
+                .exercises(document.getExercises() != null ? document.getExercises().stream()
                         .map(this::toExerciseDomain)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toList()) : java.util.Collections.emptyList())
                 .createdAt(document.getCreatedAt())
                 .build();
     }

@@ -11,4 +11,5 @@ public interface AthleteRepository {
     Optional<Athlete> findByFirstNameAndLastName(String firstName, String lastName);
     List<Athlete> findAll();
     void deleteById(String athleteId);
+    long count();
 }

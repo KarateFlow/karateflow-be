@@ -52,4 +52,16 @@ public class ReportRepositoryAdapter implements ReportRepository {
     public void deleteById(final String reportId) {
         mongoRepository.deleteById(reportId);
     }
+
+    @Override
+    public long count() {
+        return mongoRepository.count();
+    }
+
+    @Override
+    public List<Report> findTop5ByOrderByCreatedAtDesc() {
+        return mongoRepository.findTop5ByOrderByCreatedAtDesc().stream()
+                .map(reportMapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }
