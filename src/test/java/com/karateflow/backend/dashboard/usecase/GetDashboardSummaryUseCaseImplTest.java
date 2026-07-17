@@ -24,7 +24,7 @@ class GetDashboardSummaryUseCaseImplTest {
     private AthleteRepository athleteRepository;
 
     @Mock
-    private TestExecutionRepository testExecutionRepository;
+    private TestExecutionRepository testRepository;
 
     @Mock
     private ReportRepository reportRepository;
@@ -36,13 +36,13 @@ class GetDashboardSummaryUseCaseImplTest {
     void getSummary_returnsAggregatedData() {
         // Arrange
         when(athleteRepository.count()).thenReturn(10L);
-        when(testExecutionRepository.count()).thenReturn(20L);
+        when(testRepository.count()).thenReturn(20L);
         when(reportRepository.count()).thenReturn(5L);
 
         List<TestExecution> mockTests = List.of(TestExecution.builder().id("t1").build());
         List<Report> mockReports = List.of(Report.builder().reportId("r1").build());
 
-        when(testExecutionRepository.findTop5ByOrderByExecutionDateDesc()).thenReturn(mockTests);
+        when(testRepository.findTop5ByOrderByExecutionDateDesc()).thenReturn(mockTests);
         when(reportRepository.findTop5ByOrderByCreatedAtDesc()).thenReturn(mockReports);
 
         // Act

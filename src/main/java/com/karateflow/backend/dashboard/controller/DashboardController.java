@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final GetDashboardSummaryUseCase getDashboardSummaryUseCase;
+    private final GetDashboardSummaryUseCase summaryUseCase;
 
     @GetMapping("/summary")
     public ResponseEntity<DashboardSummaryResponseDTO> getSummary() {
-        final DashboardSummaryResult result = getDashboardSummaryUseCase.getSummary();
+        final DashboardSummaryResult result = summaryUseCase.getSummary();
 
         // Note: For simplicity, we can pass domain objects directly to the DTO if they serialize correctly,
         // or just return the fields that the frontend expects.

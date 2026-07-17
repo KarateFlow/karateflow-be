@@ -12,16 +12,16 @@ import org.springframework.stereotype.Service;
 public class GetDashboardSummaryUseCaseImpl implements GetDashboardSummaryUseCase {
 
     private final AthleteRepository athleteRepository;
-    private final TestExecutionRepository testExecutionRepository;
+    private final TestExecutionRepository testRepository;
     private final ReportRepository reportRepository;
 
     @Override
     public DashboardSummaryResult getSummary() {
         return DashboardSummaryResult.builder()
                 .totalAthletes(athleteRepository.count())
-                .totalTests(testExecutionRepository.count())
+                .totalTests(testRepository.count())
                 .totalReports(reportRepository.count())
-                .recentTests(testExecutionRepository.findTop5ByOrderByExecutionDateDesc())
+                .recentTests(testRepository.findTop5ByOrderByExecutionDateDesc())
                 .recentReports(reportRepository.findTop5ByOrderByCreatedAtDesc())
                 .build();
     }
