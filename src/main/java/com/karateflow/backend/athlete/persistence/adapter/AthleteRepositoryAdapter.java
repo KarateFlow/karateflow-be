@@ -66,4 +66,9 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
     public void deleteById(final String athleteId) {
         mongoRepository.deleteById(athleteId);
     }
+
+    @Override
+    public long count() {
+        return mongoRepository.count();
+    }
 }

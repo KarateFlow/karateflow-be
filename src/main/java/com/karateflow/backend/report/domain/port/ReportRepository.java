@@ -10,4 +10,6 @@ public interface ReportRepository {
     Optional<Report> findById(String reportId);
     List<Report> findByAthleteId(String athleteId);
     void deleteById(String reportId);
+    long count();
+    List<Report> findTop5ByOrderByCreatedAtDesc();
 }

@@ -48,4 +48,16 @@ public class TestExecutionRepositoryAdapter implements TestExecutionRepository {
     public void deleteById(final String testId) {
         mongoRepository.deleteById(testId);
     }
+
+    @Override
+    public long count() {
+        return mongoRepository.count();
+    }
+
+    @Override
+    public List<TestExecution> findTop5ByOrderByExecutionDateDesc() {
+        return mongoRepository.findTop5ByOrderByExecutionDateDesc().stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }
