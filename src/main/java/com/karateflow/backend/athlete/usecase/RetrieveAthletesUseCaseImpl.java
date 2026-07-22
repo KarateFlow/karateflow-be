@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class RetrieveAthletesUseCaseImpl implements RetrieveAthletesUseCase {
     public List<AthleteResponse> execute() {
         return athleteRepository.findAll().stream()
                 .map(athleteMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

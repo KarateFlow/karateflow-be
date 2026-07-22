@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,7 @@ public class RetrieveTestTemplatesUseCaseImpl implements RetrieveTestTemplatesUs
     public List<TestTemplateResponse> execute() {
         return repository.findAll().stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private TestTemplateResponse toResponse(final TestTemplate domain) {
@@ -33,7 +32,7 @@ public class RetrieveTestTemplatesUseCaseImpl implements RetrieveTestTemplatesUs
                                 .unit(e.getUnit())
                                 .greaterIsBetter(e.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }

@@ -31,7 +31,7 @@ class UpdateTestTemplateUseCaseImplTest {
 
     @Test
     void shouldUpdateTestTemplate() {
-        // Given
+        // Arrange
         final String templateId = "template-1";
         final UpdateTestTemplateRequest request = UpdateTestTemplateRequest.builder()
                 .name("Updated Name")
@@ -56,10 +56,10 @@ class UpdateTestTemplateUseCaseImplTest {
         when(repository.findById(templateId)).thenReturn(Optional.of(existing));
         when(repository.save(any(TestTemplate.class))).thenReturn(saved);
 
-        // When
+        // Act
         final TestTemplateResponse result = useCase.execute(templateId, request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Updated Name");
         verify(repository).findById(templateId);
@@ -68,12 +68,12 @@ class UpdateTestTemplateUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenTemplateNotFoundOnUpdate() {
-        // Given
+        // Arrange
         final String templateId = "template-999";
         final UpdateTestTemplateRequest request = UpdateTestTemplateRequest.builder().build();
         when(repository.findById(templateId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(templateId, request))
                 .isInstanceOf(TestTemplateNotFoundException.class)
                 .hasMessageContaining(templateId);

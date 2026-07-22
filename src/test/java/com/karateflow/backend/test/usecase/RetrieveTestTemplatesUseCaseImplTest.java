@@ -26,7 +26,7 @@ class RetrieveTestTemplatesUseCaseImplTest {
 
     @Test
     void shouldRetrieveAllTestTemplates() {
-        // Given
+        // Arrange
         final TestTemplate template = TestTemplate.builder()
                 .id("template-1")
                 .name("Standard Physical Test")
@@ -36,10 +36,10 @@ class RetrieveTestTemplatesUseCaseImplTest {
 
         when(repository.findAll()).thenReturn(List.of(template));
 
-        // When
+        // Act
         final List<TestTemplateResponse> result = useCase.execute();
 
-        // Then
+        // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo("template-1");
         verify(repository).findAll();

@@ -30,7 +30,7 @@ class CreateTestTemplateUseCaseImplTest {
 
     @Test
     void shouldCreateTestTemplate() {
-        // Given
+        // Arrange
         final CreateTestTemplateRequest request = CreateTestTemplateRequest.builder()
                 .name("Standard Physical Test")
                 .description("Default template")
@@ -52,10 +52,10 @@ class CreateTestTemplateUseCaseImplTest {
 
         when(repository.save(any(TestTemplate.class))).thenReturn(saved);
 
-        // When
+        // Act
         final TestTemplateResponse result = useCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("template-1");
         verify(repository).save(any(TestTemplate.class));

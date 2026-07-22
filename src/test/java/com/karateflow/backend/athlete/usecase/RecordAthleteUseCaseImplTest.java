@@ -39,7 +39,7 @@ class RecordAthleteUseCaseImplTest {
 
     @Test
     void shouldSuccessfullyRecordAthlete() {
-        // Given
+        // Arrange
         final RecordAthleteRequest request = RecordAthleteRequest.builder()
                 .firstName("Luigi")
                 .lastName("Verdi")
@@ -60,10 +60,10 @@ class RecordAthleteUseCaseImplTest {
 
         when(athleteRepository.save(any(Athlete.class))).thenReturn(savedAthlete);
 
-        // When
+        // Act
         final AthleteResponse response = useCase.execute(request);
 
-        // Then
+        // Assert
         assertNotNull(response);
         assertEquals("id-123", response.getAthleteId());
         assertEquals("Luigi", response.getFirstName());

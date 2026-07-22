@@ -27,25 +27,25 @@ class DeleteReportUseCaseImplTest {
 
     @Test
     void shouldDeleteReportSuccessfully() {
-        // Given
+        // Arrange
         final String reportId = "report-789";
         final Report report = Report.builder().reportId(reportId).build();
         when(reportRepository.findById(reportId)).thenReturn(Optional.of(report));
 
-        // When
+        // Act
         deleteReportUseCase.execute(reportId);
 
-        // Then
+        // Assert
         verify(reportRepository).deleteById(reportId);
     }
 
     @Test
     void shouldThrowReportNotFoundExceptionWhenReportDoesNotExist() {
-        // Given
+        // Arrange
         final String reportId = "nonexistent";
         when(reportRepository.findById(reportId)).thenReturn(Optional.empty());
 
-        // When / Then
+        // Act / Then
         assertThatThrownBy(() -> deleteReportUseCase.execute(reportId))
                 .isInstanceOf(ReportNotFoundException.class)
                 .hasMessageContaining("Report not found");

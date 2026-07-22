@@ -26,26 +26,26 @@ class DeleteTestTemplateUseCaseImplTest {
 
     @Test
     void shouldDeleteTestTemplate() {
-        // Given
+        // Arrange
         final String templateId = "template-1";
         final TestTemplate template = TestTemplate.builder().id(templateId).build();
         when(repository.findById(templateId)).thenReturn(Optional.of(template));
 
-        // When
+        // Act
         useCase.execute(templateId);
 
-        // Then
+        // Assert
         verify(repository).findById(templateId);
         verify(repository).deleteById(templateId);
     }
 
     @Test
     void shouldThrowExceptionWhenTemplateNotFoundOnDelete() {
-        // Given
+        // Arrange
         final String templateId = "template-999";
         when(repository.findById(templateId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(templateId))
                 .isInstanceOf(TestTemplateNotFoundException.class)
                 .hasMessageContaining(templateId);

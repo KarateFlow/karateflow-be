@@ -28,27 +28,27 @@ class DeleteTestUseCaseImplTest {
 
     @Test
     void shouldDeleteTestSuccessfully() {
-        // Given
+        // Arrange
         final String testId = "t1";
         final TestExecution test = TestExecution.builder().id(testId).exercises(List.of()).build();
 
         when(testRepository.findById(testId)).thenReturn(Optional.of(test));
 
-        // When
+        // Act
         useCase.execute(testId);
 
-        // Then
+        // Assert
         verify(testRepository).findById(testId);
         verify(testRepository).deleteById(testId);
     }
 
     @Test
     void shouldThrowExceptionWhenDeletingNonExistentTest() {
-        // Given
+        // Arrange
         final String testId = "non-existent";
         when(testRepository.findById(testId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(testId))
                 .isInstanceOf(TestExecutionNotFoundException.class)
                 .hasMessageContaining("Test execution not found with ID: non-existent");

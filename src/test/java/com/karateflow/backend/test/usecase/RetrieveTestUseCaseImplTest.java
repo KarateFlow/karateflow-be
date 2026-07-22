@@ -27,16 +27,16 @@ class RetrieveTestUseCaseImplTest {
 
     @Test
     void shouldRetrieveTestById() {
-        // Given
+        // Arrange
         final String testId = "t1";
         final TestExecution test = TestExecution.builder().id(testId).athleteId("123").exercises(List.of()).build();
 
         when(testRepository.findById(testId)).thenReturn(Optional.of(test));
 
-        // When
+        // Act
         final Optional<TestResponse> result = useCase.execute(testId);
 
-        // Then
+        // Assert
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo("t1");
         verify(testRepository).findById(testId);
@@ -44,14 +44,14 @@ class RetrieveTestUseCaseImplTest {
 
     @Test
     void shouldReturnEmptyWhenTestDoesNotExist() {
-        // Given
+        // Arrange
         final String testId = "non-existent";
         when(testRepository.findById(testId)).thenReturn(Optional.empty());
 
-        // When
+        // Act
         final Optional<TestResponse> result = useCase.execute(testId);
 
-        // Then
+        // Assert
         assertThat(result).isEmpty();
         verify(testRepository).findById(testId);
     }

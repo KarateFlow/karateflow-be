@@ -27,7 +27,7 @@ class RetrieveTestTemplateUseCaseImplTest {
 
     @Test
     void shouldRetrieveTestTemplate() {
-        // Given
+        // Arrange
         final String templateId = "template-1";
         final TestTemplate template = TestTemplate.builder()
                 .id(templateId)
@@ -38,10 +38,10 @@ class RetrieveTestTemplateUseCaseImplTest {
 
         when(repository.findById(templateId)).thenReturn(Optional.of(template));
 
-        // When
+        // Act
         final Optional<TestTemplateResponse> result = useCase.execute(templateId);
 
-        // Then
+        // Assert
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(templateId);
         verify(repository).findById(templateId);
@@ -49,14 +49,14 @@ class RetrieveTestTemplateUseCaseImplTest {
 
     @Test
     void shouldReturnEmptyWhenTemplateNotFound() {
-        // Given
+        // Arrange
         final String templateId = "template-999";
         when(repository.findById(templateId)).thenReturn(Optional.empty());
 
-        // When
+        // Act
         final Optional<TestTemplateResponse> result = useCase.execute(templateId);
 
-        // Then
+        // Assert
         assertThat(result).isEmpty();
         verify(repository).findById(templateId);
     }

@@ -51,41 +51,10 @@ public final class ReportCalculator {
         final double overlapThreshold = 30.0;
         final boolean lowOverlap = overlapPercentage < overlapThreshold;
 
-        final List<ExerciseComparison> comparisons = new ArrayList<>();
-        for (final String key : allKeys) {
-            final PerformedExercise exA = mapA.get(key);
-            final PerformedExercise exB = mapB.get(key);
-
-            final Double valA = exA != null ? exA.getResult() : null;
-            final Double valB = exB != null ? exB.getResult() : null;
-
-            Double delta = null;
-            Double pctChange = null;
-
-            if (valA != null && valB != null) {
-                delta = valB - valA;
-                if (Double.compare(valA, ZERO) == COMPARISON_EQUAL) {
-                    pctChange = ZERO;
-                } else {
-                    pctChange = delta / valA * PERCENTAGE_FACTOR;
-                }
-            }
-
-            final PerformedExercise exerciseRef = exB != null ? exB : exA;
-            if (exerciseRef == null) {
-                continue;
-            }
-
-            comparisons.add(ExerciseComparison.builder()
-                    .exerciseTitle(exerciseRef.getExerciseTitle())
-                    .resultA(valA)
-                    .resultB(valB)
-                    .delta(delta)
-                    .percentageChange(pctChange)
-                    .unit(exerciseRef.getUnit())
-                    .greaterIsBetter(exerciseRef.getGreaterIsBetter())
-                    .build());
-        }
+        final List<ExerciseComparison> comparisons = allKeys.stream()
+                .map(key -> buildComparison(key, mapA, mapB))
+                .filter(Objects::nonNull)
+                .toList();
 
         return TestComparisonReport.builder()
                 .athleteId(testA.getAthleteId())
@@ -97,12 +66,48 @@ public final class ReportCalculator {
                 .build();
     }
 
+    private static ExerciseComparison buildComparison(final String key, final Map<String, PerformedExercise> mapA, final Map<String, PerformedExercise> mapB) {
+        final PerformedExercise exA = mapA.get(key);
+        final PerformedExercise exB = mapB.get(key);
+
+        final Double valA = exA != null ? exA.getResult() : null;
+        final Double valB = exB != null ? exB.getResult() : null;
+
+        Double delta = null;
+        Double pctChange = null;
+
+        if (valA != null && valB != null) {
+            delta = valB - valA;
+            if (Double.compare(valA, ZERO) == COMPARISON_EQUAL) {
+                pctChange = ZERO;
+            } else {
+                pctChange = delta / valA * PERCENTAGE_FACTOR;
+            }
+        }
+
+        final PerformedExercise exerciseRef = exB != null ? exB : exA;
+        if (exerciseRef == null) {
+            return null;
+        }
+
+        return ExerciseComparison.builder()
+                .exerciseTitle(exerciseRef.getExerciseTitle())
+                .resultA(valA)
+                .resultB(valB)
+                .delta(delta)
+                .percentageChange(pctChange)
+                .unit(exerciseRef.getUnit())
+                .greaterIsBetter(exerciseRef.getGreaterIsBetter())
+                .build();
+    }
+
+
     public static TestTrendReport calculateTrend(final String athleteId, final List<TestExecution> tests) {
         // Ensure tests belong to athlete and are sorted chronologically
         final List<TestExecution> sortedTests = tests.stream()
                 .filter(t -> t.getAthleteId().equals(athleteId))
                 .sorted(Comparator.comparing(TestExecution::getExecutionDate))
-                .collect(Collectors.toList());
+                .toList();
 
         final Map<String, List<TrendDataPoint>> trendMap = new LinkedHashMap<>();
         final Map<String, PerformedExercise> metaMap = new HashMap<>();
@@ -130,7 +135,7 @@ public final class ReportCalculator {
                             .dataPoints(entry.getValue())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return TestTrendReport.builder()
                 .athleteId(athleteId)

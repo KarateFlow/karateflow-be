@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class RetrieveTestUseCaseImpl implements RetrieveTestUseCase {
                                 .unit(e.getUnit())
                                 .greaterIsBetter(e.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }

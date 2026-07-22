@@ -30,17 +30,17 @@ class RetrieveTestsUseCaseImplTest {
 
     @Test
     void shouldRetrieveTestsForAthlete() {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final TestExecution t1 = TestExecution.builder().id("t1").athleteId(athleteId).exercises(List.of()).build();
         final TestExecution t2 = TestExecution.builder().id("t2").athleteId(athleteId).exercises(List.of()).build();
 
         when(testRepository.findByAthleteId(athleteId)).thenReturn(List.of(t1, t2));
 
-        // When
+        // Act
         final List<TestResponse> result = useCase.execute(athleteId);
 
-        // Then
+        // Assert
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo("t1");
         assertThat(result.get(1).getId()).isEqualTo("t2");

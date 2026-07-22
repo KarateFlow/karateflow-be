@@ -34,7 +34,7 @@ class UpdateAthleteUseCaseImplTest {
 
     @Test
     void shouldSuccessfullyUpdateAthlete() {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final UpdateAthleteRequest request = UpdateAthleteRequest.builder()
                 .referenceContact("New Contact")
@@ -65,10 +65,10 @@ class UpdateAthleteUseCaseImplTest {
         when(athleteRepository.save(any(Athlete.class))).thenReturn(savedAthlete);
         when(athleteMapper.toResponse(savedAthlete)).thenReturn(response);
 
-        // When
+        // Act
         final AthleteResponse result = useCase.execute(athleteId, request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getReferenceContact()).isEqualTo("New Contact");
         verify(athleteRepository).findById(athleteId);
@@ -79,12 +79,12 @@ class UpdateAthleteUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistentAthlete() {
-        // Given
+        // Arrange
         final String athleteId = "999";
         final UpdateAthleteRequest request = UpdateAthleteRequest.builder().build();
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(athleteId, request))
                 .isInstanceOf(AthleteNotFoundException.class)
                 .hasMessageContaining(athleteId);
