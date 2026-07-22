@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class RecordTestUseCaseImpl implements RecordTestUseCase {
                 .coachNotes(request.getCoachNotes())
                 .exercises(request.getExercises().stream()
                         .map(this::toExerciseDomain)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -68,7 +67,7 @@ public class RecordTestUseCaseImpl implements RecordTestUseCase {
                                 .unit(e.getUnit())
                                 .greaterIsBetter(e.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }

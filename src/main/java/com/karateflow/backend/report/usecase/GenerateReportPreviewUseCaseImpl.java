@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,54 +35,48 @@ public class GenerateReportPreviewUseCaseImpl implements GenerateReportPreviewUs
         }
 
         if (TYPE_COMP.equalsIgnoreCase(request.getAnalysisType())) {
-            // 2. Fetch test A and test B
-            final TestExecution testA = testRepository.findById(request.getTestIdA())
-                    .orElseThrow(() -> new TestExecutionNotFoundException("Test not found with ID: " + request.getTestIdA()));
-            final TestExecution testB = testRepository.findById(request.getTestIdB())
-                    .orElseThrow(() -> new TestExecutionNotFoundException("Test not found with ID: " + request.getTestIdB()));
-
-            // Validate that both tests belong to the athlete
-            if (!testA.getAthleteId().equals(request.getAthleteId())) {
-                throw new IllegalArgumentException("Test with ID " + request.getTestIdA() + " does not belong to athlete " + request.getAthleteId());
-            }
-            if (!testB.getAthleteId().equals(request.getAthleteId())) {
-                throw new IllegalArgumentException("Test with ID " + request.getTestIdB() + " does not belong to athlete " + request.getAthleteId());
-            }
-
-            final TestComparisonReport report = ReportCalculator.compare(testA, testB);
-            return mapper.toComparisonResponse(report);
-
+            return generateComparisonReport(request);
         } else if (TYPE_TREND.equalsIgnoreCase(request.getAnalysisType())) {
-            // 3. Fetch all tests for athlete
-            final List<TestExecution> athleteTests = testRepository.findByAthleteId(request.getAthleteId());
-
-            // Filter by date range if specified
-            final List<TestExecution> filteredTests = athleteTests.stream()
-                    .filter(t -> {
-                        if (request.getStartDate() != null && t.getExecutionDate().isBefore(request.getStartDate())) {
-                            return false;
-                        }
-                        if (request.getEndDate() != null && t.getExecutionDate().isAfter(request.getEndDate())) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .collect(Collectors.toList());
-
-            final TestTrendReport trendReport = ReportCalculator.calculateTrend(request.getAthleteId(), filteredTests);
-            
-            // Set the start and end dates on the report for the response DTO mapping
-            final TestTrendReport trendWithDates = TestTrendReport.builder()
-                    .athleteId(trendReport.getAthleteId())
-                    .startDate(request.getStartDate())
-                    .endDate(request.getEndDate())
-                    .trends(trendReport.getTrends())
-                    .build();
-
-            return mapper.toTrendResponse(trendWithDates);
-
+            return generateTrendReport(request);
         } else {
             throw new IllegalArgumentException("Invalid analysis type: " + request.getAnalysisType());
         }
+    }
+
+    private ReportPreviewResponseDTO generateComparisonReport(final ReportPreviewRequestDTO request) {
+        final TestExecution testA = testRepository.findById(request.getTestIdA())
+                .orElseThrow(() -> new TestExecutionNotFoundException("Test not found with ID: " + request.getTestIdA()));
+        final TestExecution testB = testRepository.findById(request.getTestIdB())
+                .orElseThrow(() -> new TestExecutionNotFoundException("Test not found with ID: " + request.getTestIdB()));
+
+        if (!testA.getAthleteId().equals(request.getAthleteId())) {
+            throw new IllegalArgumentException("Test with ID " + request.getTestIdA() + " does not belong to athlete " + request.getAthleteId());
+        }
+        if (!testB.getAthleteId().equals(request.getAthleteId())) {
+            throw new IllegalArgumentException("Test with ID " + request.getTestIdB() + " does not belong to athlete " + request.getAthleteId());
+        }
+
+        final TestComparisonReport report = ReportCalculator.compare(testA, testB);
+        return mapper.toComparisonResponse(report);
+    }
+
+    private ReportPreviewResponseDTO generateTrendReport(final ReportPreviewRequestDTO request) {
+        final List<TestExecution> athleteTests = testRepository.findByAthleteId(request.getAthleteId());
+
+        final List<TestExecution> filteredTests = athleteTests.stream()
+                .filter(t -> (request.getStartDate() == null || !t.getExecutionDate().isBefore(request.getStartDate()))
+                        && (request.getEndDate() == null || !t.getExecutionDate().isAfter(request.getEndDate())))
+                .toList();
+
+        final TestTrendReport trendReport = ReportCalculator.calculateTrend(request.getAthleteId(), filteredTests);
+        
+        final TestTrendReport trendWithDates = TestTrendReport.builder()
+                .athleteId(trendReport.getAthleteId())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .trends(trendReport.getTrends())
+                .build();
+
+        return mapper.toTrendResponse(trendWithDates);
     }
 }

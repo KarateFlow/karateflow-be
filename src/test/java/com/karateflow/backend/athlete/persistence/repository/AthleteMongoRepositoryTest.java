@@ -18,7 +18,7 @@ class AthleteMongoRepositoryTest extends BaseIntegrationTest {
 
     @Test
     void shouldSaveAndRetrieveAthlete() {
-        // Given
+        // Arrange
         final AthleteDocument document = AthleteDocument.builder()
                 .firstName("Test")
                 .lastName("Integration")
@@ -27,10 +27,10 @@ class AthleteMongoRepositoryTest extends BaseIntegrationTest {
                 .medicalNotes("Healthy")
                 .build();
 
-        // When
+        // Act
         final AthleteDocument savedDocument = repository.save(document);
 
-        // Then
+        // Assert
         assertNotNull(savedDocument.getAthleteId());
 
         final var retrievedDocument = repository.findById(savedDocument.getAthleteId());

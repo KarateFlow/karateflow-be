@@ -47,7 +47,7 @@ class SaveReportUseCaseImplTest {
 
     @Test
     void shouldSaveComparisonReportSuccessfully() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final String testIdA = "test-A";
         final String testIdB = "test-B";
@@ -75,10 +75,10 @@ class SaveReportUseCaseImplTest {
             return r;
         });
 
-        // When
+        // Act
         final ReportResponseDTO result = saveReportUseCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getReportId()).isEqualTo("report-789");
         assertThat(result.getAthleteId()).isEqualTo(athleteId);
@@ -94,7 +94,7 @@ class SaveReportUseCaseImplTest {
 
     @Test
     void shouldSaveTrendReportSuccessfully() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final LocalDateTime now = LocalDateTime.now();
 
@@ -127,10 +127,10 @@ class SaveReportUseCaseImplTest {
             return r;
         });
 
-        // When
+        // Act
         final ReportResponseDTO result = saveReportUseCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getReportId()).isEqualTo("report-789");
         assertThat(result.getTestIds()).containsExactly("test-within");

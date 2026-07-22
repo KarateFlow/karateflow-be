@@ -52,7 +52,7 @@ class AthleteControllerTest {
 
     @Test
     void shouldRecordAthleteSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final RecordAthleteRequest request = RecordAthleteRequest.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -73,7 +73,7 @@ class AthleteControllerTest {
 
         when(recordUseCase.execute(any(RecordAthleteRequest.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/athletes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -85,7 +85,7 @@ class AthleteControllerTest {
 
     @Test
     void shouldReturnAthletesListSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final List<AthleteResponse> responseList = List.of(
                 AthleteResponse.builder()
                         .athleteId("1")
@@ -103,7 +103,7 @@ class AthleteControllerTest {
 
         when(retrieveUseCase.execute()).thenReturn(responseList);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/athletes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -114,7 +114,7 @@ class AthleteControllerTest {
 
     @Test
     void shouldReturnAthleteByIdSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final AthleteResponse response = AthleteResponse.builder()
                 .athleteId(athleteId)
@@ -125,7 +125,7 @@ class AthleteControllerTest {
 
         when(retrieveUseCase.execute(athleteId)).thenReturn(Optional.of(response));
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/athletes/{athleteId}", athleteId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -135,11 +135,11 @@ class AthleteControllerTest {
 
     @Test
     void shouldReturnNotFoundWhenAthleteDoesNotExist() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "999";
         when(retrieveUseCase.execute(athleteId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/athletes/{athleteId}", athleteId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -148,7 +148,7 @@ class AthleteControllerTest {
 
     @Test
     void shouldUpdateAthleteSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final UpdateAthleteRequest request = UpdateAthleteRequest.builder()
                 .referenceContact("New Contact")
@@ -165,7 +165,7 @@ class AthleteControllerTest {
 
         when(updateUseCase.execute(eq(athleteId), any(UpdateAthleteRequest.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(put("/api/v1/athletes/{athleteId}", athleteId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -177,14 +177,14 @@ class AthleteControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenMandatoryFieldsAreMissing() throws Exception {
-        // Given
+        // Arrange
         final RecordAthleteRequest request = RecordAthleteRequest.builder()
                 .firstName("") // Invalid: blank
                 .lastName("Rossi")
                 .birthDate(null) // Invalid: null
                 .build();
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/athletes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -193,7 +193,7 @@ class AthleteControllerTest {
 
     @Test
     void shouldReturnConflictWhenAthleteAlreadyExists() throws Exception {
-        // Given
+        // Arrange
         final RecordAthleteRequest request = RecordAthleteRequest.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -205,7 +205,7 @@ class AthleteControllerTest {
         when(recordUseCase.execute(any(RecordAthleteRequest.class)))
                 .thenThrow(new AthleteAlreadyExistsException("Mario", "Rossi"));
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/athletes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

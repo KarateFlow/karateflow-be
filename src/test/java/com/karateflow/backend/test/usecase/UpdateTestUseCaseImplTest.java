@@ -37,7 +37,7 @@ class UpdateTestUseCaseImplTest {
 
     @Test
     void shouldUpdateTestSuccessfullyAndKeepOriginalDate() {
-        // Given
+        // Arrange
         final String testId = "t1";
         final LocalDateTime originalDate = LocalDateTime.now().minusDays(5);
         final LocalDateTime originalCreatedAt = LocalDateTime.now().minusDays(5);
@@ -75,10 +75,10 @@ class UpdateTestUseCaseImplTest {
         when(testRepository.findById(testId)).thenReturn(Optional.of(existingTest));
         when(testRepository.save(any(TestExecution.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
+        // Act
         final TestResponse response = useCase.execute(testId, request);
 
-        // Then
+        // Assert
         assertThat(response.getId()).isEqualTo(testId);
         assertThat(response.getType()).isEqualTo("New Type");
         assertThat(response.getCoachNotes()).isEqualTo("New Notes");
@@ -96,13 +96,13 @@ class UpdateTestUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenUpdatingNonExistentTest() {
-        // Given
+        // Arrange
         final String testId = "non-existent";
         final UpdateTestRequest request = UpdateTestRequest.builder().exercises(List.of()).build();
 
         when(testRepository.findById(testId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(testId, request))
                 .isInstanceOf(TestExecutionNotFoundException.class)
                 .hasMessageContaining("Cannot update test: Test execution not found with ID: non-existent");

@@ -15,7 +15,7 @@ class ReportCalculatorTest {
 
     @Test
     void shouldCompareTestsSuccessfully() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final PerformedExercise ex1A = PerformedExercise.builder()
                 .exerciseTitle("Pushups")
@@ -57,10 +57,10 @@ class ReportCalculatorTest {
                 .exercises(List.of(ex1B, ex3B))
                 .build();
 
-        // When
+        // Act
         final TestComparisonReport report = ReportCalculator.compare(testA, testB);
 
-        // Then
+        // Assert
         assertThat(report.getAthleteId()).isEqualTo(athleteId);
         assertThat(report.getTestIdA()).isEqualTo("test-A");
         assertThat(report.getTestIdB()).isEqualTo("test-B");
@@ -102,7 +102,7 @@ class ReportCalculatorTest {
 
     @Test
     void shouldFlagLowOverlap() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final TestExecution testA = TestExecution.builder()
                 .id("test-A")
@@ -123,10 +123,10 @@ class ReportCalculatorTest {
                 ))
                 .build();
 
-        // When
+        // Act
         final TestComparisonReport report = ReportCalculator.compare(testA, testB);
 
-        // Then
+        // Assert
         // 0 shared, 5 total. Overlap is 0.0% -> lowOverlap should be true.
         assertThat(report.getOverlapPercentage()).isEqualTo(0.0);
         assertThat(report.isLowOverlap()).isTrue();
@@ -134,11 +134,11 @@ class ReportCalculatorTest {
 
     @Test
     void shouldThrowExceptionWhenComparingDifferentAthletes() {
-        // Given
+        // Arrange
         final TestExecution testA = TestExecution.builder().id("A").athleteId("athlete-1").build();
         final TestExecution testB = TestExecution.builder().id("B").athleteId("athlete-2").build();
 
-        // When/Then
+        // Act/Then
         assertThatThrownBy(() -> ReportCalculator.compare(testA, testB))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Cannot compare tests of different athletes");
@@ -146,7 +146,7 @@ class ReportCalculatorTest {
 
     @Test
     void shouldHandleDivisionByZeroInPercentage() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final TestExecution testA = TestExecution.builder()
                 .id("test-A")
@@ -160,10 +160,10 @@ class ReportCalculatorTest {
                 .exercises(List.of(PerformedExercise.builder().exerciseTitle("Ex1").result(10.0).build()))
                 .build();
 
-        // When
+        // Act
         final TestComparisonReport report = ReportCalculator.compare(testA, testB);
 
-        // Then
+        // Assert
         final ExerciseComparison comp = report.getComparisons().get(0);
         assertThat(comp.getDelta()).isEqualTo(10.0);
         assertThat(comp.getPercentageChange()).isEqualTo(0.0);
@@ -171,7 +171,7 @@ class ReportCalculatorTest {
 
     @Test
     void shouldCalculateTrendsChronologically() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final LocalDateTime date1 = LocalDateTime.now().minusDays(10);
         final LocalDateTime date2 = LocalDateTime.now().minusDays(5);
@@ -203,10 +203,10 @@ class ReportCalculatorTest {
                 ))
                 .build();
 
-        // When
+        // Act
         final TestTrendReport trendReport = ReportCalculator.calculateTrend(athleteId, List.of(test3, test1, test2));
 
-        // Then
+        // Assert
         assertThat(trendReport.getAthleteId()).isEqualTo(athleteId);
         assertThat(trendReport.getTrends()).hasSize(2);
 
@@ -233,7 +233,7 @@ class ReportCalculatorTest {
 
     @Test
     void shouldTreatExercisesAsDifferentIfFlagsOrUnitsDiffer() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final TestExecution testA = TestExecution.builder()
                 .id("test-A")
@@ -267,10 +267,10 @@ class ReportCalculatorTest {
                 ))
                 .build();
 
-        // When
+        // Act
         final TestComparisonReport report = ReportCalculator.compare(testA, testB);
 
-        // Then
+        // Assert
         // There should be 3 separate exercise results:
         // 1. Pushups | COUNT | true (Present in Test A only)
         // 2. Pushups | COUNT | false (Present in Test B only)

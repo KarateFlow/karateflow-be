@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,17 +54,10 @@ public class SaveReportUseCaseImpl implements SaveReportUseCase {
         } else if (TYPE_TREND.equalsIgnoreCase(request.getAnalysisType())) {
             final List<TestExecution> athleteTests = testRepository.findByAthleteId(request.getAthleteId());
             final List<String> filteredIds = athleteTests.stream()
-                    .filter(t -> {
-                        if (request.getStartDate() != null && t.getExecutionDate().isBefore(request.getStartDate())) {
-                            return false;
-                        }
-                        if (request.getEndDate() != null && t.getExecutionDate().isAfter(request.getEndDate())) {
-                            return false;
-                        }
-                        return true;
-                    })
+                    .filter(t -> (request.getStartDate() == null || !t.getExecutionDate().isBefore(request.getStartDate()))
+                            && (request.getEndDate() == null || !t.getExecutionDate().isAfter(request.getEndDate())))
                     .map(TestExecution::getId)
-                    .collect(Collectors.toList());
+                    .toList();
             testIds.addAll(filteredIds);
         }
 

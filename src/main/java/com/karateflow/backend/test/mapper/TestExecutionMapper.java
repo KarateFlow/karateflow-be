@@ -6,7 +6,6 @@ import com.karateflow.backend.test.persistence.document.PerformedExerciseDocumen
 import com.karateflow.backend.test.persistence.document.TestExecutionDocument;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
 
 @Component
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
@@ -24,7 +23,7 @@ public class TestExecutionMapper {
                 .coachNotes(domain.getCoachNotes())
                 .exercises(domain.getExercises().stream()
                         .map(this::toExerciseDocument)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }
@@ -41,7 +40,7 @@ public class TestExecutionMapper {
                 .coachNotes(document.getCoachNotes())
                 .exercises(document.getExercises() != null ? document.getExercises().stream()
                         .map(this::toExerciseDomain)
-                        .collect(Collectors.toList()) : java.util.Collections.emptyList())
+                        .toList() : java.util.Collections.emptyList())
                 .createdAt(document.getCreatedAt())
                 .build();
     }

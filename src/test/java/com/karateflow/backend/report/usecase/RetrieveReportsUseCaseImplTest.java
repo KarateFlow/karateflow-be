@@ -39,7 +39,7 @@ class RetrieveReportsUseCaseImplTest {
 
     @Test
     void shouldRetrieveReportsSuccessfully() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final Athlete athlete = Athlete.builder().athleteId(athleteId).build();
         final Report report = Report.builder()
@@ -50,21 +50,21 @@ class RetrieveReportsUseCaseImplTest {
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(athlete));
         when(reportRepository.findByAthleteId(athleteId)).thenReturn(List.of(report));
 
-        // When
+        // Act
         final List<ReportResponseDTO> results = retrieveReportsUseCase.execute(athleteId);
 
-        // Then
+        // Assert
         assertThat(results).hasSize(1);
         assertThat(results.get(0).getReportId()).isEqualTo("report-789");
     }
 
     @Test
     void shouldThrowAthleteNotFoundExceptionWhenAthleteDoesNotExist() {
-        // Given
+        // Arrange
         final String athleteId = "nonexistent";
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.empty());
 
-        // When / Then
+        // Act / Then
         assertThatThrownBy(() -> retrieveReportsUseCase.execute(athleteId))
                 .isInstanceOf(AthleteNotFoundException.class)
                 .hasMessageContaining("Athlete not found");

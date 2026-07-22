@@ -10,7 +10,6 @@ import com.karateflow.backend.test.dto.response.TestTemplateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class UpdateTestTemplateUseCaseImpl implements UpdateTestTemplateUseCase 
         existing.setDescription(request.getDescription());
         existing.setExercises(request.getExercises().stream()
                 .map(this::toExerciseDomain)
-                .collect(Collectors.toList()));
+                .toList());
 
         final TestTemplate saved = repository.save(existing);
         return toResponse(saved);
@@ -52,7 +51,7 @@ public class UpdateTestTemplateUseCaseImpl implements UpdateTestTemplateUseCase 
                                 .unit(e.getUnit())
                                 .greaterIsBetter(e.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }

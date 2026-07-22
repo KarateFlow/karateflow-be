@@ -11,5 +11,11 @@ class BackendApplicationTests extends BaseIntegrationTest {
     static final MongoDBContainer mongoContainer = new MongoDBContainer("mongo:7.0");
 
     @Test
-    void contextLoads() {}
+    void contextLoads() {
+        // Arrange
+        // Act (Context loading handled by Spring Extension)
+        
+        // Assert
+        org.hamcrest.MatcherAssert.assertThat(mongoContainer.isRunning(), org.hamcrest.Matchers.is(true));
+    }
 }

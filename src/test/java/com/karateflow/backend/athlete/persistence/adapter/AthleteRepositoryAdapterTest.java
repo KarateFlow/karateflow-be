@@ -88,7 +88,7 @@ class AthleteRepositoryAdapterTest {
 
     @Test
     void shouldReturnAllAthletes() {
-        // Given
+        // Arrange
         final AthleteDocument doc1 = AthleteDocument.builder().athleteId("1").build();
         final AthleteDocument doc2 = AthleteDocument.builder().athleteId("2").build();
         final Athlete a1 = Athlete.builder().athleteId("1").build();
@@ -98,10 +98,10 @@ class AthleteRepositoryAdapterTest {
         when(athleteMapper.toDomain(doc1)).thenReturn(a1);
         when(athleteMapper.toDomain(doc2)).thenReturn(a2);
 
-        // When
+        // Act
         final List<Athlete> result = adapter.findAll();
 
-        // Then
+        // Assert
         assertThat(result).hasSize(2).containsExactly(a1, a2);
         verify(mongoRepository).findAll();
     }

@@ -64,7 +64,7 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldRecordTestSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId("123")
                 .executionDate(LocalDateTime.now())
@@ -85,7 +85,7 @@ class TestExecutionControllerTest {
 
         when(recordUseCase.execute(any(CreateTestRequest.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/tests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -96,7 +96,7 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldRetrieveTestsSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final List<TestResponse> response = List.of(
                 TestResponse.builder().id("t1").athleteId(athleteId).build()
@@ -104,7 +104,7 @@ class TestExecutionControllerTest {
 
         when(retrieveUseCase.execute(athleteId)).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/tests")
                         .param("athleteId", athleteId)
                         .accept(MediaType.APPLICATION_JSON))
@@ -115,10 +115,10 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenMandatoryFieldsAreMissing() throws Exception {
-        // Given
+        // Arrange
         final CreateTestRequest request = CreateTestRequest.builder().build(); // All fields missing
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/tests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -127,7 +127,7 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldGetTestDetailSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String testId = "test-id";
         final TestResponse response = TestResponse.builder()
                 .id(testId)
@@ -136,7 +136,7 @@ class TestExecutionControllerTest {
 
         when(detailUseCase.execute(testId)).thenReturn(Optional.of(response));
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/tests/{testId}", testId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -146,11 +146,11 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldReturnNotFoundWhenGetTestDetailDoesNotExist() throws Exception {
-        // Given
+        // Arrange
         final String testId = "test-id";
         when(detailUseCase.execute(testId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/tests/{testId}", testId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -159,7 +159,7 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldUpdateTestSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String testId = "test-id";
         final UpdateTestRequest request = UpdateTestRequest.builder()
                 .type("Updated Type")
@@ -183,7 +183,7 @@ class TestExecutionControllerTest {
 
         when(updateUseCase.execute(eq(testId), any(UpdateTestRequest.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(put("/api/v1/tests/{testId}", testId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -195,22 +195,22 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldDeleteTestSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String testId = "test-id";
         doNothing().when(deleteUseCase).execute(testId);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(delete("/api/v1/tests/{testId}", testId))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void shouldReturnNotFoundWhenDeletingNonExistentTest() throws Exception {
-        // Given
+        // Arrange
         final String testId = "test-id";
         doThrow(new TestExecutionNotFoundException("Test execution not found")).when(deleteUseCase).execute(testId);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(delete("/api/v1/tests/{testId}", testId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Test Execution Not Found"));
@@ -226,7 +226,7 @@ class TestExecutionControllerTest {
 
     @Test
     void shouldAcceptResultOfZero() throws Exception {
-        // Given
+        // Arrange
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId("123")
                 .executionDate(LocalDateTime.now())
@@ -247,7 +247,7 @@ class TestExecutionControllerTest {
 
         when(recordUseCase.execute(any(CreateTestRequest.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/tests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

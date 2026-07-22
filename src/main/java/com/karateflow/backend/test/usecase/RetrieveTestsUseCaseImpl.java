@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class RetrieveTestsUseCaseImpl implements RetrieveTestsUseCase {
     public List<TestResponse> execute(final String athleteId) {
         return testRepository.findByAthleteId(athleteId).stream()
                 .map(this::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private TestResponse toResponse(final com.karateflow.backend.test.domain.model.TestExecution domain) {
@@ -37,7 +36,7 @@ public class RetrieveTestsUseCaseImpl implements RetrieveTestsUseCase {
                                 .unit(e.getUnit())
                                 .greaterIsBetter(e.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .createdAt(domain.getCreatedAt())
                 .build();
     }

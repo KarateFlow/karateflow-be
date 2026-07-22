@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Component
 public class ReportMapper {
@@ -34,7 +33,7 @@ public class ReportMapper {
                 .overlapPercentage(report.getOverlapPercentage())
                 .comparisonResults(report.getComparisons().stream()
                         .map(this::toComparisonDTO)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -50,7 +49,7 @@ public class ReportMapper {
                 .endDate(report.getEndDate())
                 .exerciseTrends(report.getTrends().stream()
                         .map(this::toTrendDTO)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -76,7 +75,7 @@ public class ReportMapper {
                 .greaterIsBetter(trend.getGreaterIsBetter())
                 .dataPoints(trend.getDataPoints().stream()
                         .map(this::toDataPointDTO)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -123,7 +122,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .startDate(payload.getStartDate())
                 .endDate(payload.getEndDate())
                 .exerciseTrends(payload.getExerciseTrends() == null ? null : payload.getExerciseTrends().stream()
@@ -136,9 +135,9 @@ public class ReportMapper {
                                                 .date(dp.getDate())
                                                 .result(dp.getResult())
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -178,7 +177,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .startDate(payloadDoc.getStartDate())
                 .endDate(payloadDoc.getEndDate())
                 .exerciseTrends(payloadDoc.getExerciseTrends() == null ? null : payloadDoc.getExerciseTrends().stream()
@@ -191,9 +190,9 @@ public class ReportMapper {
                                                 .date(dp.getDate())
                                                 .result(dp.getResult())
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -233,7 +232,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .startDate(payload.getStartDate())
                 .endDate(payload.getEndDate())
                 .exerciseTrends(payload.getExerciseTrends() == null ? null : payload.getExerciseTrends().stream()
@@ -246,9 +245,9 @@ public class ReportMapper {
                                                 .date(dp.getDate())
                                                 .result(dp.getResult())
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 
@@ -275,7 +274,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .startDate(previewResponse.getStartDate())
                 .endDate(previewResponse.getEndDate())
                 .exerciseTrends(previewResponse.getExerciseTrends() == null ? Collections.emptyList() : previewResponse.getExerciseTrends().stream()
@@ -288,9 +287,9 @@ public class ReportMapper {
                                                 .date(dp.getDate())
                                                 .result(dp.getResult())
                                                 .build())
-                                        .collect(Collectors.toList()))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
     }
 }

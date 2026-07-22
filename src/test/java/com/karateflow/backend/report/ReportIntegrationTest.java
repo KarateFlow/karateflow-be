@@ -60,7 +60,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldGenerateComparisonPreviewSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final AthleteDocument athlete = AthleteDocument.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -104,7 +104,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
                 .testIdB(savedTestB.getId())
                 .build();
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/reports/preview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -124,7 +124,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldGenerateTrendPreviewSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final AthleteDocument athlete = AthleteDocument.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -170,7 +170,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
                 .endDate(now)
                 .build();
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/reports/preview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -186,7 +186,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldSaveAndRetrieveAndDeleteReportIntegrationFlow() throws Exception {
-        // Given
+        // Arrange
         final AthleteDocument athlete = AthleteDocument.builder()
                 .firstName("Mario")
                 .lastName("Rossi")

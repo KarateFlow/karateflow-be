@@ -43,7 +43,7 @@ class RecordTestUseCaseImplTest {
 
     @Test
     void shouldSuccessfullyRecordTest() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId(athleteId)
@@ -68,10 +68,10 @@ class RecordTestUseCaseImplTest {
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(athlete));
         when(testRepository.save(any(TestExecution.class))).thenReturn(savedTest);
 
-        // When
+        // Act
         final TestResponse result = useCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("test-999");
         verify(athleteRepository).findById(athleteId);
@@ -80,12 +80,12 @@ class RecordTestUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenAthleteNotFound() {
-        // Given
+        // Arrange
         final String athleteId = "999";
         final CreateTestRequest request = CreateTestRequest.builder().athleteId(athleteId).build();
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.empty());
 
-        // When & Then
+        // Act & Then
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(AthleteNotFoundException.class)
                 .hasMessageContaining(athleteId);

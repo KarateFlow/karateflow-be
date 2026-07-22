@@ -43,7 +43,7 @@ class GenerateReportPreviewUseCaseImplTest {
 
     @Test
     void shouldGenerateComparisonSuccessfully() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final String testIdA = "test-A";
         final String testIdB = "test-B";
@@ -71,10 +71,10 @@ class GenerateReportPreviewUseCaseImplTest {
         when(testRepository.findById(testIdA)).thenReturn(Optional.of(testA));
         when(testRepository.findById(testIdB)).thenReturn(Optional.of(testB));
 
-        // When
+        // Act
         final ReportPreviewResponseDTO response = useCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(response).isNotNull();
         assertThat(response.getAnalysisType()).isEqualTo("COMPARISON");
         assertThat(response.getAthleteId()).isEqualTo(athleteId);
@@ -86,7 +86,7 @@ class GenerateReportPreviewUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenAthleteNotFound() {
-        // Given
+        // Arrange
         final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
                 .athleteId("non-existent")
                 .analysisType("COMPARISON")
@@ -94,7 +94,7 @@ class GenerateReportPreviewUseCaseImplTest {
 
         when(athleteRepository.findById("non-existent")).thenReturn(Optional.empty());
 
-        // When/Then
+        // Act/Then
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(AthleteNotFoundException.class)
                 .hasMessageContaining("Athlete not found");
@@ -102,7 +102,7 @@ class GenerateReportPreviewUseCaseImplTest {
 
     @Test
     void shouldThrowExceptionWhenTestNotFound() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
                 .athleteId(athleteId)
@@ -114,14 +114,14 @@ class GenerateReportPreviewUseCaseImplTest {
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(Athlete.builder().athleteId(athleteId).build()));
         when(testRepository.findById("non-existent")).thenReturn(Optional.empty());
 
-        // When/Then
+        // Act/Then
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(TestExecutionNotFoundException.class);
     }
 
     @Test
     void shouldThrowExceptionWhenTestsBelongToDifferentAthletes() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
                 .athleteId(athleteId)
@@ -137,7 +137,7 @@ class GenerateReportPreviewUseCaseImplTest {
         when(testRepository.findById("test-A")).thenReturn(Optional.of(testA));
         when(testRepository.findById("test-B")).thenReturn(Optional.of(testB));
 
-        // When/Then
+        // Act/Then
         assertThatThrownBy(() -> useCase.execute(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("does not belong to athlete");
@@ -145,7 +145,7 @@ class GenerateReportPreviewUseCaseImplTest {
 
     @Test
     void shouldGenerateTrendSuccessfullyAndFilterDates() {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final LocalDateTime now = LocalDateTime.now();
 
@@ -177,10 +177,10 @@ class GenerateReportPreviewUseCaseImplTest {
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(Athlete.builder().athleteId(athleteId).build()));
         when(testRepository.findByAthleteId(athleteId)).thenReturn(List.of(tBefore, tWithin, tAfter));
 
-        // When
+        // Act
         final ReportPreviewResponseDTO response = useCase.execute(request);
 
-        // Then
+        // Assert
         assertThat(response).isNotNull();
         assertThat(response.getAnalysisType()).isEqualTo("TREND");
         assertThat(response.getStartDate()).isEqualTo(now.minusDays(5));

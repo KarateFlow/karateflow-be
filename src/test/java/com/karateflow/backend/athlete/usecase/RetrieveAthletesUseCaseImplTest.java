@@ -31,7 +31,7 @@ class RetrieveAthletesUseCaseImplTest {
 
     @Test
     void shouldSuccessfullyRetrieveAllAthletes() {
-        // Given
+        // Arrange
         final Athlete a1 = Athlete.builder().athleteId("1").firstName("Mario").build();
         final Athlete a2 = Athlete.builder().athleteId("2").firstName("Luigi").build();
         final AthleteResponse r1 = AthleteResponse.builder().athleteId("1").firstName("Mario").build();
@@ -41,10 +41,10 @@ class RetrieveAthletesUseCaseImplTest {
         when(athleteMapper.toResponse(a1)).thenReturn(r1);
         when(athleteMapper.toResponse(a2)).thenReturn(r2);
 
-        // When
+        // Act
         final List<AthleteResponse> result = useCase.execute();
 
-        // Then
+        // Assert
         assertThat(result).hasSize(2).containsExactly(r1, r2);
         verify(athleteRepository).findAll();
         verify(athleteMapper).toResponse(a1);
@@ -53,7 +53,7 @@ class RetrieveAthletesUseCaseImplTest {
 
     @Test
     void shouldSuccessfullyRetrieveAthleteById() {
-        // Given
+        // Arrange
         final String athleteId = "123";
         final Athlete athlete = Athlete.builder().athleteId(athleteId).firstName("Mario").build();
         final AthleteResponse response = AthleteResponse.builder().athleteId(athleteId).firstName("Mario").build();
@@ -61,10 +61,10 @@ class RetrieveAthletesUseCaseImplTest {
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(athlete));
         when(athleteMapper.toResponse(athlete)).thenReturn(response);
 
-        // When
+        // Act
         final Optional<AthleteResponse> result = useCase.execute(athleteId);
 
-        // Then
+        // Assert
         assertThat(result).isPresent().contains(response);
         verify(athleteRepository).findById(athleteId);
         verify(athleteMapper).toResponse(athlete);
@@ -72,14 +72,14 @@ class RetrieveAthletesUseCaseImplTest {
 
     @Test
     void shouldReturnEmptyWhenAthleteNotFound() {
-        // Given
+        // Arrange
         final String athleteId = "999";
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.empty());
 
-        // When
+        // Act
         final Optional<AthleteResponse> result = useCase.execute(athleteId);
 
-        // Then
+        // Assert
         assertThat(result).isEmpty();
         verify(athleteRepository).findById(athleteId);
     }

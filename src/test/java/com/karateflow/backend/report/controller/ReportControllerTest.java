@@ -59,7 +59,7 @@ class ReportControllerTest {
 
     @Test
     void shouldGenerateReportPreviewSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
                 .analysisType("COMPARISON")
                 .athleteId("athlete-123")
@@ -81,7 +81,7 @@ class ReportControllerTest {
 
         when(generatePreviewUseCase.execute(any(ReportPreviewRequestDTO.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/reports/preview")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -96,7 +96,7 @@ class ReportControllerTest {
 
     @Test
     void shouldSaveReportSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final ReportSaveRequestDTO request = ReportSaveRequestDTO.builder()
                 .analysisType("COMPARISON")
                 .athleteId("athlete-123")
@@ -121,7 +121,7 @@ class ReportControllerTest {
 
         when(saveReportUseCase.execute(any(ReportSaveRequestDTO.class))).thenReturn(response);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(post("/api/v1/reports")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -135,7 +135,7 @@ class ReportControllerTest {
 
     @Test
     void shouldGetReportsByAthleteSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "athlete-123";
         final ReportResponseDTO report = ReportResponseDTO.builder()
                 .reportId("report-789")
@@ -151,7 +151,7 @@ class ReportControllerTest {
 
         when(retrieveReportsUseCase.execute(athleteId)).thenReturn(List.of(report));
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/reports/athlete/{id}", athleteId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -162,12 +162,12 @@ class ReportControllerTest {
 
     @Test
     void shouldReturn404WhenGetReportsForNonexistentAthlete() throws Exception {
-        // Given
+        // Arrange
         final String athleteId = "nonexistent";
         when(retrieveReportsUseCase.execute(athleteId))
                 .thenThrow(new AthleteNotFoundException("Athlete not found with ID: " + athleteId));
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(get("/api/v1/reports/athlete/{id}", athleteId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
@@ -176,23 +176,23 @@ class ReportControllerTest {
 
     @Test
     void shouldDeleteReportSuccessfully() throws Exception {
-        // Given
+        // Arrange
         final String reportId = "report-789";
         doNothing().when(deleteReportUseCase).execute(reportId);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(delete("/api/v1/reports/{id}", reportId))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void shouldReturn404WhenDeleteNonexistentReport() throws Exception {
-        // Given
+        // Arrange
         final String reportId = "nonexistent";
         doThrow(new ReportNotFoundException("Report not found with ID: " + reportId))
                 .when(deleteReportUseCase).execute(reportId);
 
-        // When & Then
+        // Act & Then
         mockMvc.perform(delete("/api/v1/reports/{id}", reportId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Report Not Found"));
