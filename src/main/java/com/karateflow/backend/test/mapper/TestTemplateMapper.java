@@ -6,6 +6,7 @@ import com.karateflow.backend.test.persistence.document.TemplateExerciseDocument
 import com.karateflow.backend.test.persistence.document.TestTemplateDocument;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
 
 @Component
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
@@ -21,7 +22,7 @@ public class TestTemplateMapper {
                 .description(domain.getDescription())
                 .exercises(domain.getExercises().stream()
                         .map(this::toExerciseDocument)
-                        .toList())
+                        .collect(Collectors.toList()))
                 .createdAt(domain.getCreatedAt())
                 .build();
     }
@@ -36,7 +37,7 @@ public class TestTemplateMapper {
                 .description(document.getDescription())
                 .exercises(document.getExercises().stream()
                         .map(this::toExerciseDomain)
-                        .toList())
+                        .collect(Collectors.toList()))
                 .createdAt(document.getCreatedAt())
                 .build();
     }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class TestExecutionRepositoryAdapter implements TestExecutionRepository {
     public List<TestExecution> findByAthleteId(final String athleteId) {
         return mongoRepository.findByAthleteIdOrderByExecutionDateDesc(athleteId).stream()
                 .map(mapper::toDomain)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -57,6 +58,6 @@ public class TestExecutionRepositoryAdapter implements TestExecutionRepository {
     public List<TestExecution> findTop5ByOrderByExecutionDateDesc() {
         return mongoRepository.findTop5ByOrderByExecutionDateDesc().stream()
                 .map(mapper::toDomain)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

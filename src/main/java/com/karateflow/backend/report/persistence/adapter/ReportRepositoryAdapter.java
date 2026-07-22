@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class ReportRepositoryAdapter implements ReportRepository {
     public List<Report> findByAthleteId(final String athleteId) {
         return mongoRepository.findByAthleteIdOrderByCreatedAtDesc(athleteId).stream()
                 .map(reportMapper::toDomain)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -61,6 +62,6 @@ public class ReportRepositoryAdapter implements ReportRepository {
     public List<Report> findTop5ByOrderByCreatedAtDesc() {
         return mongoRepository.findTop5ByOrderByCreatedAtDesc().stream()
                 .map(reportMapper::toDomain)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

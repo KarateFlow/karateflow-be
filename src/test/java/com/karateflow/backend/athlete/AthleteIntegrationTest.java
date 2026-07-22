@@ -35,7 +35,7 @@ class AthleteIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldRetrieveAllAthletes() throws Exception {
-        // Arrange
+        // Given
         final AthleteDocument a1 = AthleteDocument.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -48,7 +48,7 @@ class AthleteIntegrationTest extends BaseIntegrationTest {
                 .build();
         repository.saveAll(List.of(a1, a2));
 
-        // Act & Then
+        // When & Then
         mockMvc.perform(get("/api/v1/athletes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

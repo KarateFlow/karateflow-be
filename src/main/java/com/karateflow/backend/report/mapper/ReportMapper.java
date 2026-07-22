@@ -14,8 +14,8 @@ import com.karateflow.backend.report.persistence.document.ReportPayloadDocument;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Component
 public class ReportMapper {
@@ -34,7 +34,7 @@ public class ReportMapper {
                 .overlapPercentage(report.getOverlapPercentage())
                 .comparisonResults(report.getComparisons().stream()
                         .map(this::toComparisonDTO)
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -50,7 +50,7 @@ public class ReportMapper {
                 .endDate(report.getEndDate())
                 .exerciseTrends(report.getTrends().stream()
                         .map(this::toTrendDTO)
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -76,7 +76,7 @@ public class ReportMapper {
                 .greaterIsBetter(trend.getGreaterIsBetter())
                 .dataPoints(trend.getDataPoints().stream()
                         .map(this::toDataPointDTO)
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -123,7 +123,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .startDate(payload.getStartDate())
                 .endDate(payload.getEndDate())
                 .exerciseTrends(payload.getExerciseTrends() == null ? null : payload.getExerciseTrends().stream()
@@ -131,20 +131,15 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(mapDataPointsToDocument(t.getDataPoints()))
+                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
+                                        .map(dp -> ReportPayloadDocument.TrendDataPointDetailDocument.builder()
+                                                .date(dp.getDate())
+                                                .result(dp.getResult())
+                                                .build())
+                                        .collect(Collectors.toList()))
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
-    }
-
-    private List<ReportPayloadDocument.TrendDataPointDetailDocument> mapDataPointsToDocument(final List<ReportPayload.TrendDataPointDetail> dataPoints) {
-        if (dataPoints == null) return null;
-        return dataPoints.stream()
-                .map(dp -> ReportPayloadDocument.TrendDataPointDetailDocument.builder()
-                        .date(dp.getDate())
-                        .result(dp.getResult())
-                        .build())
-                .toList();
     }
 
     // --- Persistence -> Domain mappings ---
@@ -183,7 +178,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .startDate(payloadDoc.getStartDate())
                 .endDate(payloadDoc.getEndDate())
                 .exerciseTrends(payloadDoc.getExerciseTrends() == null ? null : payloadDoc.getExerciseTrends().stream()
@@ -191,20 +186,15 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(mapDataPointsToDomain(t.getDataPoints()))
+                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
+                                        .map(dp -> ReportPayload.TrendDataPointDetail.builder()
+                                                .date(dp.getDate())
+                                                .result(dp.getResult())
+                                                .build())
+                                        .collect(Collectors.toList()))
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
-    }
-
-    private List<ReportPayload.TrendDataPointDetail> mapDataPointsToDomain(final List<ReportPayloadDocument.TrendDataPointDetailDocument> dataPoints) {
-        if (dataPoints == null) return null;
-        return dataPoints.stream()
-                .map(dp -> ReportPayload.TrendDataPointDetail.builder()
-                        .date(dp.getDate())
-                        .result(dp.getResult())
-                        .build())
-                .toList();
     }
 
     // --- Domain -> Response DTO mappings ---
@@ -243,7 +233,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .startDate(payload.getStartDate())
                 .endDate(payload.getEndDate())
                 .exerciseTrends(payload.getExerciseTrends() == null ? null : payload.getExerciseTrends().stream()
@@ -251,20 +241,15 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(mapDataPointsToDTO(t.getDataPoints()))
+                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
+                                        .map(dp -> ReportPreviewResponseDTO.TrendDataPointDTO.builder()
+                                                .date(dp.getDate())
+                                                .result(dp.getResult())
+                                                .build())
+                                        .collect(Collectors.toList()))
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
-    }
-
-    private List<ReportPreviewResponseDTO.TrendDataPointDTO> mapDataPointsToDTO(final List<ReportPayload.TrendDataPointDetail> dataPoints) {
-        if (dataPoints == null) return null;
-        return dataPoints.stream()
-                .map(dp -> ReportPreviewResponseDTO.TrendDataPointDTO.builder()
-                        .date(dp.getDate())
-                        .result(dp.getResult())
-                        .build())
-                .toList();
     }
 
     // --- Preview Response DTO -> Domain Payload mapping (useful for saveUseCase) ---
@@ -290,7 +275,7 @@ public class ReportMapper {
                                 .unit(c.getUnit())
                                 .greaterIsBetter(c.getGreaterIsBetter())
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .startDate(previewResponse.getStartDate())
                 .endDate(previewResponse.getEndDate())
                 .exerciseTrends(previewResponse.getExerciseTrends() == null ? Collections.emptyList() : previewResponse.getExerciseTrends().stream()
@@ -298,19 +283,14 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(mapDataPointsFromPreviewToDomain(t.getDataPoints()))
+                                .dataPoints(t.getDataPoints() == null ? Collections.emptyList() : t.getDataPoints().stream()
+                                        .map(dp -> ReportPayload.TrendDataPointDetail.builder()
+                                                .date(dp.getDate())
+                                                .result(dp.getResult())
+                                                .build())
+                                        .collect(Collectors.toList()))
                                 .build())
-                        .toList())
+                        .collect(Collectors.toList()))
                 .build();
-    }
-
-    private List<ReportPayload.TrendDataPointDetail> mapDataPointsFromPreviewToDomain(final List<ReportPreviewResponseDTO.TrendDataPointDTO> dataPoints) {
-        if (dataPoints == null) return Collections.emptyList();
-        return dataPoints.stream()
-                .map(dp -> ReportPayload.TrendDataPointDetail.builder()
-                        .date(dp.getDate())
-                        .result(dp.getResult())
-                        .build())
-                .toList();
     }
 }
