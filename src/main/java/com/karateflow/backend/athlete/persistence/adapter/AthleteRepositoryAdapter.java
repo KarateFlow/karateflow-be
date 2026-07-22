@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -59,7 +58,7 @@ public class AthleteRepositoryAdapter implements AthleteRepository {
     public List<Athlete> findAll() {
         return mongoRepository.findAll().stream()
                 .map(athleteMapper::toDomain)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
