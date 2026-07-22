@@ -14,6 +14,7 @@ import com.karateflow.backend.report.persistence.document.ReportPayloadDocument;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 @Component
@@ -130,15 +131,20 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
-                                        .map(dp -> ReportPayloadDocument.TrendDataPointDetailDocument.builder()
-                                                .date(dp.getDate())
-                                                .result(dp.getResult())
-                                                .build())
-                                        .toList())
+                                .dataPoints(mapDataPointsToDocument(t.getDataPoints()))
                                 .build())
                         .toList())
                 .build();
+    }
+
+    private List<ReportPayloadDocument.TrendDataPointDetailDocument> mapDataPointsToDocument(final List<ReportPayload.TrendDataPointDetail> dataPoints) {
+        if (dataPoints == null) return null;
+        return dataPoints.stream()
+                .map(dp -> ReportPayloadDocument.TrendDataPointDetailDocument.builder()
+                        .date(dp.getDate())
+                        .result(dp.getResult())
+                        .build())
+                .toList();
     }
 
     // --- Persistence -> Domain mappings ---
@@ -185,15 +191,20 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
-                                        .map(dp -> ReportPayload.TrendDataPointDetail.builder()
-                                                .date(dp.getDate())
-                                                .result(dp.getResult())
-                                                .build())
-                                        .toList())
+                                .dataPoints(mapDataPointsToDomain(t.getDataPoints()))
                                 .build())
                         .toList())
                 .build();
+    }
+
+    private List<ReportPayload.TrendDataPointDetail> mapDataPointsToDomain(final List<ReportPayloadDocument.TrendDataPointDetailDocument> dataPoints) {
+        if (dataPoints == null) return null;
+        return dataPoints.stream()
+                .map(dp -> ReportPayload.TrendDataPointDetail.builder()
+                        .date(dp.getDate())
+                        .result(dp.getResult())
+                        .build())
+                .toList();
     }
 
     // --- Domain -> Response DTO mappings ---
@@ -240,15 +251,20 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(t.getDataPoints() == null ? null : t.getDataPoints().stream()
-                                        .map(dp -> ReportPreviewResponseDTO.TrendDataPointDTO.builder()
-                                                .date(dp.getDate())
-                                                .result(dp.getResult())
-                                                .build())
-                                        .toList())
+                                .dataPoints(mapDataPointsToDTO(t.getDataPoints()))
                                 .build())
                         .toList())
                 .build();
+    }
+
+    private List<ReportPreviewResponseDTO.TrendDataPointDTO> mapDataPointsToDTO(final List<ReportPayload.TrendDataPointDetail> dataPoints) {
+        if (dataPoints == null) return null;
+        return dataPoints.stream()
+                .map(dp -> ReportPreviewResponseDTO.TrendDataPointDTO.builder()
+                        .date(dp.getDate())
+                        .result(dp.getResult())
+                        .build())
+                .toList();
     }
 
     // --- Preview Response DTO -> Domain Payload mapping (useful for saveUseCase) ---
@@ -282,14 +298,19 @@ public class ReportMapper {
                                 .exerciseTitle(t.getExerciseTitle())
                                 .unit(t.getUnit())
                                 .greaterIsBetter(t.getGreaterIsBetter())
-                                .dataPoints(t.getDataPoints() == null ? Collections.emptyList() : t.getDataPoints().stream()
-                                        .map(dp -> ReportPayload.TrendDataPointDetail.builder()
-                                                .date(dp.getDate())
-                                                .result(dp.getResult())
-                                                .build())
-                                        .toList())
+                                .dataPoints(mapDataPointsFromPreviewToDomain(t.getDataPoints()))
                                 .build())
                         .toList())
                 .build();
+    }
+
+    private List<ReportPayload.TrendDataPointDetail> mapDataPointsFromPreviewToDomain(final List<ReportPreviewResponseDTO.TrendDataPointDTO> dataPoints) {
+        if (dataPoints == null) return Collections.emptyList();
+        return dataPoints.stream()
+                .map(dp -> ReportPayload.TrendDataPointDetail.builder()
+                        .date(dp.getDate())
+                        .result(dp.getResult())
+                        .build())
+                .toList();
     }
 }
