@@ -11,8 +11,17 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * Suite di test unitari per {@link ReportCalculator}.
+ * Documenta la validazione delle logiche di dominio (calcolo di percentuali, overlap) 
+ * assicurando che le mutazioni matematiche o condizionali falliscano.
+ */
 class ReportCalculatorTest {
 
+    /**
+     * Happy path: Verifica che il confronto tra due test avvenga correttamente,
+     * calcolando i delta, la variazione percentuale e l'overlap degli esercizi.
+     */
     @Test
     void shouldCompareTestsSuccessfully() {
         // Arrange
@@ -100,6 +109,10 @@ class ReportCalculatorTest {
         assertThat(squats.getPercentageChange()).isNull();
     }
 
+    /**
+     * Sad path / Edge case: Verifica il caso di overlap percentuale nullo o molto basso (< 30%).
+     * Uccide i mutanti legati alle condizioni limite (ConditionalsBoundaryMutator).
+     */
     @Test
     void shouldFlagLowOverlap() {
         // Arrange
@@ -132,6 +145,10 @@ class ReportCalculatorTest {
         assertThat(report.isLowOverlap()).isTrue();
     }
 
+    /**
+     * Sad path: Verifica che venga lanciata un'eccezione se si confrontano esecuzioni di atleti differenti.
+     * Difende le precondizioni da RemoveConditionalMutator.
+     */
     @Test
     void shouldThrowExceptionWhenComparingDifferentAthletes() {
         // Arrange
@@ -144,6 +161,10 @@ class ReportCalculatorTest {
                 .hasMessageContaining("Cannot compare tests of different athletes");
     }
 
+    /**
+     * Sad path: Gestione della divisione per zero quando il risultato del primo test è 0.
+     * Assicura che la percentuale restituita sia 0 per evitare NaN/Infinity, proteggendo la logica matematica.
+     */
     @Test
     void shouldHandleDivisionByZeroInPercentage() {
         // Arrange
@@ -169,6 +190,10 @@ class ReportCalculatorTest {
         assertThat(comp.getPercentageChange()).isEqualTo(0.0);
     }
 
+    /**
+     * Happy path: Verifica che i trend vengano calcolati raggruppando gli esercizi
+     * in ordine cronologico.
+     */
     @Test
     void shouldCalculateTrendsChronologically() {
         // Arrange
@@ -231,6 +256,10 @@ class ReportCalculatorTest {
         assertThat(plankTrend.getDataPoints().get(1).getDate()).isEqualTo(date2);
     }
 
+    /**
+     * Edge case: Esercizi con stesso nome ma unità di misura o flag "greaterIsBetter" differenti
+     * devono essere considerati come esercizi distinti nel report.
+     */
     @Test
     void shouldTreatExercisesAsDifferentIfFlagsOrUnitsDiffer() {
         // Arrange
@@ -295,5 +324,97 @@ class ReportCalculatorTest {
                 .findFirst().orElseThrow();
         assertThat(ex3.getResultA()).isNull();
         assertThat(ex3.getResultB()).isEqualTo(30.0);
+    }
+
+    /**
+     * Sad path: Esecuzioni di test con lista di esercizi nulla.
+     * Uccide i NullReturnValsMutator e assicura che il sistema gestisca le collection vuote o nulle.
+     */
+    @Test
+    void shouldHandleNullExercisesInCompare() {
+        // Arrange
+        final TestExecution testA = TestExecution.builder()
+                .id("test-A")
+                .athleteId("athlete-123")
+                .exercises(null)
+                .build();
+        final TestExecution testB = TestExecution.builder()
+                .id("test-B")
+                .athleteId("athlete-123")
+                .exercises(null)
+                .build();
+
+        // Act
+        final TestComparisonReport report = ReportCalculator.compare(testA, testB);
+
+        // Assert
+        assertThat(report.getComparisons()).isEmpty();
+        assertThat(report.getOverlapPercentage()).isEqualTo(0.0);
+        assertThat(report.isLowOverlap()).isTrue();
+    }
+
+    /**
+     * Edge case: Overlap esattamente sulla soglia limite (30.0%).
+     * Verifica il perimetro delle disuguaglianze per sconfiggere i ConditionalsBoundaryMutator.
+     */
+    @Test
+    void shouldNotFlagLowOverlapWhenExactlyThreshold() {
+        // Arrange
+        // We want overlap percentage = 30.0% exactly.
+        // If shared is 3 and total is 10, then 3/10 = 30%.
+        // testA has 3 shared, 7 unique = 10. testB has 3 shared, 0 unique = 3.
+        // Wait, total = union. 3 shared + 7 unique A = 10 total.
+        final String athleteId = "athlete-123";
+        final List<PerformedExercise> exercisesA = new java.util.ArrayList<>();
+        final List<PerformedExercise> exercisesB = new java.util.ArrayList<>();
+        
+        for (int i = 0; i < 3; i++) {
+            PerformedExercise ex = PerformedExercise.builder().exerciseTitle("Shared" + i).result(10.0).build();
+            exercisesA.add(ex);
+            exercisesB.add(ex);
+        }
+        for (int i = 0; i < 7; i++) {
+            PerformedExercise ex = PerformedExercise.builder().exerciseTitle("Unique" + i).result(10.0).build();
+            exercisesA.add(ex);
+        }
+
+        final TestExecution testA = TestExecution.builder().id("A").athleteId(athleteId).exercises(exercisesA).build();
+        final TestExecution testB = TestExecution.builder().id("B").athleteId(athleteId).exercises(exercisesB).build();
+
+        // Act
+        final TestComparisonReport report = ReportCalculator.compare(testA, testB);
+
+        // Assert
+        assertThat(report.getOverlapPercentage()).isEqualTo(30.0);
+        assertThat(report.isLowOverlap()).isFalse(); // Since it checks < 30.0
+    }
+
+    /**
+     * Sad path: Verifica il calcolo del trend scartando atleti non inerenti e tollerando esecuzioni con esercizi a null.
+     */
+    @Test
+    void shouldFilterOutOtherAthletesAndHandleNullExercisesInTrend() {
+        // Arrange
+        final String athleteId = "athlete-123";
+        
+        final TestExecution test1 = TestExecution.builder()
+                .id("1")
+                .athleteId(athleteId)
+                .executionDate(LocalDateTime.now())
+                .exercises(null) // tests line 116
+                .build();
+                
+        final TestExecution test2 = TestExecution.builder()
+                .id("2")
+                .athleteId("other-athlete")
+                .executionDate(LocalDateTime.now())
+                .exercises(List.of(PerformedExercise.builder().exerciseTitle("Ex").result(10.0).build())) // tests line 108
+                .build();
+
+        // Act
+        final TestTrendReport report = ReportCalculator.calculateTrend(athleteId, List.of(test1, test2));
+
+        // Assert
+        assertThat(report.getTrends()).isEmpty();
     }
 }

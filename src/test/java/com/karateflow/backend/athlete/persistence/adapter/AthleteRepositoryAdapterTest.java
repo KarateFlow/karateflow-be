@@ -22,6 +22,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Suite di test unitari per l'adapter del repository degli Atleti.
+ * Documenta sia gli happy path sia i sad path mirati ad aumentare la mutation coverage.
+ */
 @ExtendWith(MockitoExtension.class)
 class AthleteRepositoryAdapterTest {
 
@@ -34,8 +38,13 @@ class AthleteRepositoryAdapterTest {
     @InjectMocks
     private AthleteRepositoryAdapter adapter;
 
+    /**
+     * Sad path: Verifica che venga lanciata l'eccezione {@link AthleteAlreadyExistsException}
+     * quando si tenta di inserire un nuovo atleta ma esiste già a DB un record con stesso nome e cognome.
+     */
     @Test
     void shouldThrowAthleteAlreadyExistsExceptionWhenDuplicateAthleteExists() {
+        // Arrange
         Athlete athlete = Athlete.builder()
                 .firstName("Mario")
                 .lastName("Rossi")
@@ -49,12 +58,18 @@ class AthleteRepositoryAdapterTest {
                         .lastName("Rossi")
                         .build()));
 
+        // Act & Assert
         assertThrows(AthleteAlreadyExistsException.class, () -> adapter.save(athlete));
         verify(mongoRepository, never()).save(any(AthleteDocument.class));
     }
 
+    /**
+     * Happy path: Verifica che il salvataggio proceda correttamente se si sta
+     * aggiornando un atleta esistente (ovvero l'atleta duplicato trovato ha lo stesso ID).
+     */
     @Test
     void shouldAllowSavingWhenAthleteIdMatchesExistingOneDuringUpdate() {
+        // Arrange
         final String athleteId = "existing-id";
         final Athlete athlete = Athlete.builder()
                 .athleteId(athleteId)
@@ -79,13 +94,18 @@ class AthleteRepositoryAdapterTest {
         when(mongoRepository.save(any(AthleteDocument.class))).thenReturn(savedDocument);
         when(athleteMapper.toDomain(savedDocument)).thenReturn(athlete);
 
+        // Act
         final Athlete result = adapter.save(athlete);
 
+        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getAthleteId()).isEqualTo(athleteId);
         verify(mongoRepository).save(any(AthleteDocument.class));
     }
 
+    /**
+     * Happy path: Verifica il recupero corretto di tutti gli atleti dal DB.
+     */
     @Test
     void shouldReturnAllAthletes() {
         // Given
@@ -104,5 +124,40 @@ class AthleteRepositoryAdapterTest {
         // Then
         assertThat(result).hasSize(2).containsExactly(a1, a2);
         verify(mongoRepository).findAll();
+    }
+
+    /**
+     * Happy/Sad path: Verifica che al salvataggio di un nuovo atleta venga generato
+     * un nuovo ID univoco e un timestamp di creazione (CreatedAt).
+     * Uccide i mutanti associati a chiamate a metodi void per la valorizzazione dell'ID/timestamp.
+     */
+    @Test
+    void shouldSaveNewAthleteAndGenerateIdAndCreatedAt() {
+        // Given
+        final Athlete athlete = Athlete.builder()
+                .firstName("Luigi")
+                .lastName("Verdi")
+                .build();
+                
+        final AthleteDocument documentWithoutId = AthleteDocument.builder()
+                .firstName("Luigi")
+                .lastName("Verdi")
+                .build();
+                
+        when(mongoRepository.findByFirstNameAndLastName("Luigi", "Verdi")).thenReturn(Optional.empty());
+        when(athleteMapper.toDocument(athlete)).thenReturn(documentWithoutId);
+        when(mongoRepository.save(any(AthleteDocument.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(athleteMapper.toDomain(any(AthleteDocument.class))).thenReturn(athlete);
+        
+        // When
+        adapter.save(athlete);
+        
+        // Then
+        org.mockito.ArgumentCaptor<AthleteDocument> captor = org.mockito.ArgumentCaptor.forClass(AthleteDocument.class);
+        verify(mongoRepository).save(captor.capture());
+        
+        AthleteDocument savedDoc = captor.getValue();
+        assertThat(savedDoc.getAthleteId()).isNotNull();
+        assertThat(savedDoc.getCreatedAt()).isNotNull();
     }
 }

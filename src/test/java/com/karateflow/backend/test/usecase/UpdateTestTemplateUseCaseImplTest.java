@@ -20,6 +20,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class per la logica di aggiornamento dei TestTemplate.
+ */
 @ExtendWith(MockitoExtension.class)
 class UpdateTestTemplateUseCaseImplTest {
 
@@ -29,6 +32,10 @@ class UpdateTestTemplateUseCaseImplTest {
     @InjectMocks
     private UpdateTestTemplateUseCaseImpl useCase;
 
+    /**
+     * Testa il caso di successo di aggiornamento di un TestTemplate.
+     * (Happy path)
+     */
     @Test
     void shouldUpdateTestTemplate() {
         // Arrange
@@ -62,10 +69,15 @@ class UpdateTestTemplateUseCaseImplTest {
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Updated Name");
+        assertThat(result.getDescription()).isEqualTo("Updated desc");
         verify(repository).findById(templateId);
         verify(repository).save(any(TestTemplate.class));
     }
 
+    /**
+     * Testa il caso di fallimento quando il TestTemplate non viene trovato.
+     * (Sad path)
+     */
     @Test
     void shouldThrowExceptionWhenTemplateNotFoundOnUpdate() {
         // Arrange

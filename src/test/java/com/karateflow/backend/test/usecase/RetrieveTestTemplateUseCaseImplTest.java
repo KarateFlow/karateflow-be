@@ -25,15 +25,24 @@ class RetrieveTestTemplateUseCaseImplTest {
     @InjectMocks
     private RetrieveTestTemplateUseCaseImpl useCase;
 
+    /**
+     * Happy path: Verifica il recupero corretto di un template esistente.
+     */
     @Test
     void shouldRetrieveTestTemplate() {
         // Arrange
         final String templateId = "template-1";
+        final com.karateflow.backend.test.domain.model.TemplateExercise exercise = com.karateflow.backend.test.domain.model.TemplateExercise.builder()
+                .exerciseTitle("Squat")
+                .unit(com.karateflow.backend.test.domain.model.MeasurementUnit.KG)
+                .greaterIsBetter(true)
+                .build();
+                
         final TestTemplate template = TestTemplate.builder()
                 .id(templateId)
                 .name("Standard Physical Test")
                 .description("Default template")
-                .exercises(List.of())
+                .exercises(List.of(exercise))
                 .build();
 
         when(repository.findById(templateId)).thenReturn(Optional.of(template));
@@ -44,9 +53,17 @@ class RetrieveTestTemplateUseCaseImplTest {
         // Assert
         assertThat(result).isPresent();
         assertThat(result.get().getId()).isEqualTo(templateId);
+        assertThat(result.get().getExercises()).hasSize(1);
+        assertThat(result.get().getExercises().get(0).getExerciseTitle()).isEqualTo("Squat");
+        assertThat(result.get().getExercises().get(0).getUnit()).isEqualTo(com.karateflow.backend.test.domain.model.MeasurementUnit.KG);
+        assertThat(result.get().getExercises().get(0).getGreaterIsBetter()).isTrue();
         verify(repository).findById(templateId);
     }
 
+    /**
+     * Sad path: Verifica che venga restituito un Optional vuoto (o l'eccezione, a seconda
+     * dell'implementazione) se il template cercato non esiste.
+     */
     @Test
     void shouldReturnEmptyWhenTemplateNotFound() {
         // Arrange
