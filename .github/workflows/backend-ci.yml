@@ -15,11 +15,10 @@ jobs:
 
     env:
       TESTCONTAINERS_RYUK_DISABLED: 'true'
-      TESTCONTAINERS_HOST_OVERRIDE: 'host.docker.internal'
 
     steps:
-      - name: Setup host.docker.internal for Testcontainers
-        run: echo "$(ip -4 route show default | awk '{print $3}') host.docker.internal" >> /etc/hosts
+      - name: Set Testcontainers Host Override
+        run: echo "TESTCONTAINERS_HOST_OVERRIDE=$(ip -4 route show default | awk '{print $3}')" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v4
