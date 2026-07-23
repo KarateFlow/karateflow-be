@@ -1,0 +1,49 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feat/*'
+      - 'fix/*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test-analyze:
+    name: Build, Test & SonarQube Analysis
+    runs-on: self-hosted
+
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: 'true'
+      TESTCONTAINERS_HOST_OVERRIDE: 'host.docker.internal'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile and Test (Unit & Integration)
+        run: ./mvnw clean compile verify
+
+      - name: PIT Mutation Testing
+        run: ./mvnw pitest:mutationCoverage
+
+      - name: SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw sonar:sonar \
+            -Dsonar.host.url=http://sonarqube.local \
+            -Dsonar.token=${SONAR_TOKEN} \
+            -Dsonar.projectKey=karateflow-be \
+            -Dsonar.qualitygate.wait=true
