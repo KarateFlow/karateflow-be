@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - 'feat/*'
-      - 'fix/*'
   pull_request:
     branches:
       - main
@@ -33,16 +31,16 @@ jobs:
           cache: 'maven'
 
       - name: Compile and Test (Unit & Integration)
-        run: mvn clean compile verify
+        run: ./mvnw clean compile verify
 
       - name: PIT Mutation Testing
-        run: mvn pitest:mutationCoverage
+        run: ./mvnw pitest:mutationCoverage
 
       - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn sonar:sonar \
+          ./mvnw sonar:sonar \
             -Dsonar.host.url=http://sonarqube.local \
             -Dsonar.token=${SONAR_TOKEN} \
             -Dsonar.projectKey=karateflow-be \
