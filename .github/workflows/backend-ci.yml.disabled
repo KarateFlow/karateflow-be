@@ -1,0 +1,49 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test-analyze:
+    name: Build, Test & SonarQube Analysis
+    runs-on: self-hosted
+
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: 'true'
+
+    steps:
+      - name: Set Testcontainers Host Override
+        run: echo "TESTCONTAINERS_HOST_OVERRIDE=$(docker network inspect bridge -f '{{(index .IPAM.Config 0).Gateway}}')" >> $GITHUB_ENV
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile and Test (Unit & Integration)
+        run: ./mvnw clean compile verify
+
+      - name: Mappa Ingress SonarQube locale
+        run: echo "$(docker network inspect bridge -f '{{(index .IPAM.Config 0).Gateway}}') sonarqube.local" >> /etc/hosts
+
+      - name: SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./mvnw sonar:sonar \
+            -Dsonar.host.url=http://sonarqube.local \
+            -Dsonar.token=${SONAR_TOKEN} \
+            -Dsonar.projectKey=karateflow-be \
+            -Dsonar.qualitygate.wait=true
