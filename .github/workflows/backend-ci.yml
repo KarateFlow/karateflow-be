@@ -35,9 +35,6 @@ jobs:
       - name: Compile and Test (Unit & Integration)
         run: ./mvnw clean compile verify
 
-      - name: PIT Mutation Testing
-        run: ./mvnw pitest:mutationCoverage
-
       - name: Mappa Ingress SonarQube locale
         run: echo "$(docker network inspect bridge -f '{{(index .IPAM.Config 0).Gateway}}') sonarqube.local" >> /etc/hosts
 

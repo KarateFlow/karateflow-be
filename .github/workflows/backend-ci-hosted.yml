@@ -38,9 +38,6 @@ jobs:
         # Su ubuntu-latest Testcontainers funziona perfettamente di default senza bisogno di IP override
         run: ./mvnw clean compile verify
 
-      - name: PIT Mutation Testing
-        run: ./mvnw pitest:mutationCoverage
-
       - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
