@@ -18,6 +18,9 @@ jobs:
       TESTCONTAINERS_HOST_OVERRIDE: 'host.docker.internal'
 
     steps:
+      - name: Setup host.docker.internal for Testcontainers
+        run: echo "$(ip -4 route show default | awk '{print $3}') host.docker.internal" >> /etc/hosts
+
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
