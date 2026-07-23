@@ -45,6 +45,10 @@ class SaveReportUseCaseImplTest {
     @InjectMocks
     private SaveReportUseCaseImpl saveReportUseCase;
 
+    /**
+     * Happy path: Verifica il corretto salvataggio del report di tipo confronto (Comparison)
+     * richiamando l'adapter corrispondente e mappando le strutture.
+     */
     @Test
     void shouldSaveComparisonReportSuccessfully() {
         // Arrange
@@ -92,6 +96,10 @@ class SaveReportUseCaseImplTest {
         assertThat(capturedReport.getPayload().getAnalysisType()).isEqualTo("COMPARISON");
     }
 
+    /**
+     * Happy path: Verifica il corretto salvataggio del report di tipo trend
+     * e la corretta mappatura dell'entità prima di passarla al repository.
+     */
     @Test
     void shouldSaveTrendReportSuccessfully() {
         // Arrange
@@ -113,14 +121,26 @@ class SaveReportUseCaseImplTest {
                 .exerciseTrends(Collections.emptyList())
                 .build();
 
+        final TestExecution testBefore = TestExecution.builder()
+                .id("test-before")
+                .athleteId(athleteId)
+                .executionDate(now.minusDays(10))
+                .build();
+
         final TestExecution testWithin = TestExecution.builder()
                 .id("test-within")
                 .athleteId(athleteId)
                 .executionDate(now.minusDays(2))
                 .build();
+                
+        final TestExecution testAfter = TestExecution.builder()
+                .id("test-after")
+                .athleteId(athleteId)
+                .executionDate(now.plusDays(5))
+                .build();
 
         when(previewUseCase.execute(any(ReportPreviewRequestDTO.class))).thenReturn(previewResponse);
-        when(testRepository.findByAthleteId(athleteId)).thenReturn(List.of(testWithin));
+        when(testRepository.findByAthleteId(athleteId)).thenReturn(List.of(testBefore, testWithin, testAfter));
         when(reportRepository.save(any(Report.class))).thenAnswer(invocation -> {
             final Report r = invocation.getArgument(0);
             r.setReportId("report-789");

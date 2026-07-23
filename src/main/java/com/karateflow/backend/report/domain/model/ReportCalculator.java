@@ -18,9 +18,6 @@ public final class ReportCalculator {
     }
 
     private static String getExerciseKey(final PerformedExercise exercise) {
-        if (exercise == null) {
-            return "";
-        }
         return exercise.getExerciseTitle() + "|" + exercise.getUnit() + "|" + exercise.getGreaterIsBetter();
     }
 

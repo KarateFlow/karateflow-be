@@ -41,6 +41,9 @@ class GenerateReportPreviewUseCaseImplTest {
     @InjectMocks
     private GenerateReportPreviewUseCaseImpl useCase;
 
+    /**
+     * Happy path: Genera un'anteprima di confronto con successo, validando l'interazione tra i componenti.
+     */
     @Test
     void shouldGenerateComparisonSuccessfully() {
         // Arrange
@@ -84,6 +87,9 @@ class GenerateReportPreviewUseCaseImplTest {
         assertThat(response.getComparisonResults().get(0).getDelta()).isEqualTo("5.00");
     }
 
+    /**
+     * Sad path: Verifica il lancio dell'eccezione se l'atleta richiesto non esiste.
+     */
     @Test
     void shouldThrowExceptionWhenAthleteNotFound() {
         // Arrange
@@ -100,6 +106,9 @@ class GenerateReportPreviewUseCaseImplTest {
                 .hasMessageContaining("Athlete not found");
     }
 
+    /**
+     * Sad path: Verifica il lancio dell'eccezione se uno dei test non viene trovato.
+     */
     @Test
     void shouldThrowExceptionWhenTestNotFound() {
         // Arrange
@@ -119,6 +128,10 @@ class GenerateReportPreviewUseCaseImplTest {
                 .isInstanceOf(TestExecutionNotFoundException.class);
     }
 
+    /**
+     * Sad path: Verifica che venga bloccata la generazione del report se i due test 
+     * appartengono ad atleti differenti.
+     */
     @Test
     void shouldThrowExceptionWhenTestsBelongToDifferentAthletes() {
         // Arrange
@@ -143,6 +156,38 @@ class GenerateReportPreviewUseCaseImplTest {
                 .hasMessageContaining("does not belong to athlete");
     }
 
+    /**
+     * Sad path: Controlla che i test passati per l'anteprima appartengano effettivamente
+     * all'atleta per il quale si sta richiedendo il report.
+     */
+    @Test
+    void shouldThrowExceptionWhenTestABelongsToDifferentAthlete() {
+        // Arrange
+        final String athleteId = "athlete-123";
+        final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
+                .athleteId(athleteId)
+                .analysisType("COMPARISON")
+                .testIdA("test-A")
+                .testIdB("test-B")
+                .build();
+
+        final TestExecution testA = TestExecution.builder().id("test-A").athleteId("other-athlete").build();
+        final TestExecution testB = TestExecution.builder().id("test-B").athleteId(athleteId).build();
+
+        when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(Athlete.builder().athleteId(athleteId).build()));
+        when(testRepository.findById("test-A")).thenReturn(Optional.of(testA));
+        when(testRepository.findById("test-B")).thenReturn(Optional.of(testB));
+
+        // Act/Then
+        assertThatThrownBy(() -> useCase.execute(request))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("does not belong to athlete");
+    }
+
+    /**
+     * Happy path: Verifica che la generazione del trend applichi correttamente
+     * il filtro sulle date e aggreghi le informazioni richieste.
+     */
     @Test
     void shouldGenerateTrendSuccessfullyAndFilterDates() {
         // Arrange

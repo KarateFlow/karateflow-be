@@ -41,6 +41,10 @@ class RecordTestUseCaseImplTest {
     @InjectMocks
     private RecordTestUseCaseImpl useCase;
 
+    /**
+     * Happy path: Verifica che la registrazione di un test generi l'ID e 
+     * avvenga correttamente validando le dipendenze associate.
+     */
     @Test
     void shouldSuccessfullyRecordTest() {
         // Arrange
@@ -59,10 +63,17 @@ class RecordTestUseCaseImplTest {
                 .build();
 
         final Athlete athlete = Athlete.builder().athleteId(athleteId).build();
+        final com.karateflow.backend.test.domain.model.PerformedExercise savedExercise = com.karateflow.backend.test.domain.model.PerformedExercise.builder()
+                .exerciseTitle("Squat")
+                .result(100.0)
+                .unit(MeasurementUnit.KG)
+                .greaterIsBetter(true)
+                .build();
+                
         final TestExecution savedTest = TestExecution.builder()
                 .id("test-999")
                 .athleteId(athleteId)
-                .exercises(List.of())
+                .exercises(List.of(savedExercise))
                 .build();
 
         when(athleteRepository.findById(athleteId)).thenReturn(Optional.of(athlete));
@@ -74,10 +85,28 @@ class RecordTestUseCaseImplTest {
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("test-999");
+        assertThat(result.getExercises()).hasSize(1);
+        assertThat(result.getExercises().get(0).getExerciseTitle()).isEqualTo("Squat");
+        assertThat(result.getExercises().get(0).getResult()).isEqualTo(100.0);
+        assertThat(result.getExercises().get(0).getUnit()).isEqualTo(MeasurementUnit.KG);
+        assertThat(result.getExercises().get(0).getGreaterIsBetter()).isTrue();
+        
         verify(athleteRepository).findById(athleteId);
-        verify(testRepository).save(any(TestExecution.class));
+        org.mockito.ArgumentCaptor<TestExecution> captor = org.mockito.ArgumentCaptor.forClass(TestExecution.class);
+        verify(testRepository).save(captor.capture());
+        
+        TestExecution captured = captor.getValue();
+        assertThat(captured.getExercises()).hasSize(1);
+        assertThat(captured.getExercises().get(0).getExerciseTitle()).isEqualTo("Squat");
+        assertThat(captured.getExercises().get(0).getResult()).isEqualTo(100.0);
+        assertThat(captured.getExercises().get(0).getUnit()).isEqualTo(MeasurementUnit.KG);
+        assertThat(captured.getExercises().get(0).getGreaterIsBetter()).isTrue();
     }
 
+    /**
+     * Sad path: Verifica il lancio dell'eccezione se l'atleta non esiste a sistema
+     * durante la registrazione di un test.
+     */
     @Test
     void shouldThrowExceptionWhenAthleteNotFound() {
         // Arrange
