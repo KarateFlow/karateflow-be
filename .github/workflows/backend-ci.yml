@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Set Testcontainers Host Override
-        run: echo "TESTCONTAINERS_HOST_OVERRIDE=$(ip -4 route show default | awk '{print $3}')" >> $GITHUB_ENV
+        run: echo "TESTCONTAINERS_HOST_OVERRIDE=$(docker network inspect bridge -f '{{(index .IPAM.Config 0).Gateway}}')" >> $GITHUB_ENV
 
       - name: Checkout Code
         uses: actions/checkout@v4
