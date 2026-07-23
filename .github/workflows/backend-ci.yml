@@ -33,16 +33,16 @@ jobs:
           cache: 'maven'
 
       - name: Compile and Test (Unit & Integration)
-        run: ./mvnw clean compile verify
+        run: mvn clean compile verify
 
       - name: PIT Mutation Testing
-        run: ./mvnw pitest:mutationCoverage
+        run: mvn pitest:mutationCoverage
 
       - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./mvnw sonar:sonar \
+          mvn sonar:sonar \
             -Dsonar.host.url=http://sonarqube.local \
             -Dsonar.token=${SONAR_TOKEN} \
             -Dsonar.projectKey=karateflow-be \
