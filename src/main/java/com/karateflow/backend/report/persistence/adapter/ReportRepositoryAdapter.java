@@ -53,6 +53,11 @@ public class ReportRepositoryAdapter implements ReportRepository {
     }
 
     @Override
+    public void deleteByAthleteId(final String athleteId) {
+        mongoRepository.deleteByAthleteId(athleteId);
+    }
+
+    @Override
     public long count() {
         return mongoRepository.count();
     }

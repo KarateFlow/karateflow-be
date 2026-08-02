@@ -49,6 +49,11 @@ public class TestExecutionRepositoryAdapter implements TestExecutionRepository {
     }
 
     @Override
+    public void deleteByAthleteId(final String athleteId) {
+        mongoRepository.deleteByAthleteId(athleteId);
+    }
+
+    @Override
     public long count() {
         return mongoRepository.count();
     }

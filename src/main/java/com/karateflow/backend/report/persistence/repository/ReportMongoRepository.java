@@ -10,4 +10,5 @@ import java.util.List;
 public interface ReportMongoRepository extends MongoRepository<ReportDocument, String> {
     List<ReportDocument> findByAthleteIdOrderByCreatedAtDesc(String athleteId);
     List<ReportDocument> findTop5ByOrderByCreatedAtDesc();
+    void deleteByAthleteId(String athleteId);
 }

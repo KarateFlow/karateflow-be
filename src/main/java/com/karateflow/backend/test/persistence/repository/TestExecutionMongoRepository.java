@@ -10,4 +10,5 @@ import java.util.List;
 public interface TestExecutionMongoRepository extends MongoRepository<TestExecutionDocument, String> {
     List<TestExecutionDocument> findByAthleteIdOrderByExecutionDateDesc(String athleteId);
     List<TestExecutionDocument> findTop5ByOrderByExecutionDateDesc();
+    void deleteByAthleteId(String athleteId);
 }
