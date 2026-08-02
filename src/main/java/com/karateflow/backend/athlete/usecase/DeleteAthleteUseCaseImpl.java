@@ -24,8 +24,9 @@ public class DeleteAthleteUseCaseImpl implements DeleteAthleteUseCase {
     public void execute(final String athleteId) {
         log.info("Executing transactional cascade delete for athlete ID: {}", athleteId);
         
-        final var athlete = athleteRepository.findById(athleteId).orElseThrow(() -> 
-                new AthleteNotFoundException("Athlete not found with ID: " + athleteId));
+        if (athleteRepository.findById(athleteId).isEmpty()) {
+            throw new AthleteNotFoundException("Athlete not found with ID: " + athleteId);
+        }
 
         log.debug("Deleting reports for athlete ID: {}", athleteId);
         reportRepository.deleteByAthleteId(athleteId);
