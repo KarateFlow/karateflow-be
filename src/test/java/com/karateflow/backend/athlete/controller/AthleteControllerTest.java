@@ -8,7 +8,9 @@ import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
 import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
 import com.karateflow.backend.athlete.usecase.UpdateAthleteUseCase;
+import com.karateflow.backend.athlete.usecase.DeleteAthleteUseCase;
 import com.karateflow.backend.common.exception.AthleteAlreadyExistsException;
+import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import com.karateflow.backend.common.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,11 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,6 +53,9 @@ class AthleteControllerTest {
 
     @MockitoBean
     private UpdateAthleteUseCase updateUseCase;
+
+    @MockitoBean
+    private DeleteAthleteUseCase deleteUseCase;
 
     @Test
     void shouldRecordAthleteSuccessfully() throws Exception {
@@ -211,5 +218,28 @@ class AthleteControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.title").value("Athlete Conflict"));
+    }
+
+    @Test
+    void shouldDeleteAthleteSuccessfully() throws Exception {
+        // Given
+        final String athleteId = "123";
+
+        // When & Then
+        mockMvc.perform(delete("/api/v1/athletes/{athleteId}", athleteId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeletingNonExistentAthlete() throws Exception {
+        // Given
+        final String athleteId = "999";
+        doThrow(new AthleteNotFoundException("Athlete not found with ID: " + athleteId))
+                .when(deleteUseCase).execute(athleteId);
+
+        // When & Then
+        mockMvc.perform(delete("/api/v1/athletes/{athleteId}", athleteId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Athlete Not Found"));
     }
 }

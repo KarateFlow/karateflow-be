@@ -6,10 +6,13 @@ import com.karateflow.backend.athlete.dto.response.AthleteResponse;
 import com.karateflow.backend.athlete.usecase.RecordAthleteUseCase;
 import com.karateflow.backend.athlete.usecase.RetrieveAthletesUseCase;
 import com.karateflow.backend.athlete.usecase.UpdateAthleteUseCase;
+import com.karateflow.backend.athlete.usecase.DeleteAthleteUseCase;
 import com.karateflow.backend.common.exception.AthleteNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,7 @@ public class AthleteController {
     private final RecordAthleteUseCase recordUseCase;
     private final RetrieveAthletesUseCase retrieveUseCase;
     private final UpdateAthleteUseCase updateUseCase;
+    private final DeleteAthleteUseCase deleteUseCase;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,5 +79,18 @@ public class AthleteController {
             log.info("Athlete updated successfully with ID: {}", athleteId);
         }
         return response;
+    }
+
+    @DeleteMapping("/{athleteId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> deleteAthlete(@PathVariable final String athleteId) {
+        if (log.isInfoEnabled()) {
+            log.info("Received request to delete athlete with ID: {}", athleteId);
+        }
+        deleteUseCase.execute(athleteId);
+        if (log.isInfoEnabled()) {
+            log.info("Athlete deleted successfully with ID: {}", athleteId);
+        }
+        return ResponseEntity.noContent().build();
     }
 }
