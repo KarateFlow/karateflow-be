@@ -19,6 +19,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -192,7 +193,7 @@ class GenerateReportPreviewUseCaseImplTest {
     void shouldGenerateTrendSuccessfullyAndFilterDates() {
         // Arrange
         final String athleteId = "athlete-123";
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDate now = LocalDate.now();
 
         final ReportPreviewRequestDTO request = ReportPreviewRequestDTO.builder()
                 .analysisType("TREND")

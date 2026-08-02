@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -23,7 +23,7 @@ public class CreateTestRequest {
 
     @NotNull(message = "Execution date is mandatory")
     @PastOrPresent(message = "Execution date cannot be in the future")
-    private LocalDateTime executionDate;
+    private LocalDate executionDate;
 
     private String type;
     private String coachNotes;

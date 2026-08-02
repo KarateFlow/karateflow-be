@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -25,8 +25,8 @@ public class ReportPayload {
     private List<ExerciseComparisonDetail> comparisonResults;
     
     // Trend results (populated if TREND)
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private List<ExerciseTrendDetail> exerciseTrends;
 
     @Data
@@ -59,7 +59,7 @@ public class ReportPayload {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TrendDataPointDetail {
-        private LocalDateTime date;
+        private LocalDate date;
         private Double result;
     }
 }

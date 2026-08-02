@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ class UpdateTestUseCaseImplTest {
     void shouldUpdateTestSuccessfullyAndKeepOriginalDate() {
         // Arrange
         final String testId = "t1";
-        final LocalDateTime originalDate = LocalDateTime.now().minusDays(5);
+        final LocalDate originalDate = LocalDate.now().minusDays(5);
         final LocalDateTime originalCreatedAt = LocalDateTime.now().minusDays(5);
 
         final TestExecution existingTest = TestExecution.builder()

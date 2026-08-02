@@ -6,6 +6,7 @@ import com.karateflow.backend.test.domain.model.TestExecution;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,14 +56,14 @@ class ReportCalculatorTest {
         final TestExecution testA = TestExecution.builder()
                 .id("test-A")
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now().minusDays(10))
+                .executionDate(LocalDate.now().minusDays(10))
                 .exercises(List.of(ex1A, ex2A))
                 .build();
 
         final TestExecution testB = TestExecution.builder()
                 .id("test-B")
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(ex1B, ex3B))
                 .build();
 
@@ -198,9 +199,9 @@ class ReportCalculatorTest {
     void shouldCalculateTrendsChronologically() {
         // Arrange
         final String athleteId = "athlete-123";
-        final LocalDateTime date1 = LocalDateTime.now().minusDays(10);
-        final LocalDateTime date2 = LocalDateTime.now().minusDays(5);
-        final LocalDateTime date3 = LocalDateTime.now();
+        final LocalDate date1 = LocalDate.now().minusDays(10);
+        final LocalDate date2 = LocalDate.now().minusDays(5);
+        final LocalDate date3 = LocalDate.now();
 
         final TestExecution test3 = TestExecution.builder()
                 .athleteId(athleteId)
@@ -400,14 +401,14 @@ class ReportCalculatorTest {
         final TestExecution test1 = TestExecution.builder()
                 .id("1")
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(null) // tests line 116
                 .build();
                 
         final TestExecution test2 = TestExecution.builder()
                 .id("2")
                 .athleteId("other-athlete")
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(PerformedExercise.builder().exerciseTitle("Ex").result(10.0).build())) // tests line 108
                 .build();
 

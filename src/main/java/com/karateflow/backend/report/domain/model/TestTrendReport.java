@@ -3,7 +3,7 @@ package com.karateflow.backend.report.domain.model;
 import lombok.Builder;
 import lombok.Value;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Value
@@ -11,7 +11,7 @@ import java.util.List;
 @SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestTrendReport {
     private final String athleteId;
-    private final LocalDateTime startDate;
-    private final LocalDateTime endDate;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
     private final List<ExerciseTrend> trends;
 }

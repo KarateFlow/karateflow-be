@@ -23,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +68,7 @@ class TestExecutionControllerTest {
         // Given
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId("123")
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(
                         PerformedExerciseRequest.builder()
                                 .exerciseTitle("Test")
@@ -229,7 +230,7 @@ class TestExecutionControllerTest {
         // Given
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId("123")
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(
                         PerformedExerciseRequest.builder()
                                 .exerciseTitle("Test")

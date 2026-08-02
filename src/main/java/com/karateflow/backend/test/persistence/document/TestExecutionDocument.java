@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class TestExecutionDocument {
     @Indexed
     private String athleteId;
 
-    private LocalDateTime executionDate;
+    private LocalDate executionDate;
     private String type;
     private String coachNotes;
     private List<PerformedExerciseDocument> exercises;
