@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,7 +85,7 @@ class AthleteIntegrationTest extends BaseIntegrationTest {
 
         final TestExecutionDocument testExecution = TestExecutionDocument.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .build();
         testExecutionRepository.save(testExecution);
 

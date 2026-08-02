@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +72,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
         final TestExecutionDocument testA = TestExecutionDocument.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now().minusDays(10))
+                .executionDate(LocalDate.now().minusDays(10))
                 .exercises(List.of(
                         PerformedExerciseDocument.builder()
                                 .exerciseTitle("Pushups")
@@ -85,7 +86,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
         final TestExecutionDocument testB = TestExecutionDocument.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(
                         PerformedExerciseDocument.builder()
                                 .exerciseTitle("Pushups")
@@ -133,7 +134,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
         final AthleteDocument savedAthlete = athleteRepository.save(athlete);
         final String athleteId = savedAthlete.getAthleteId();
 
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDate now = LocalDate.now();
 
         final TestExecutionDocument test1 = TestExecutionDocument.builder()
                 .athleteId(athleteId)
@@ -197,7 +198,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
         final TestExecutionDocument testA = TestExecutionDocument.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now().minusDays(10))
+                .executionDate(LocalDate.now().minusDays(10))
                 .exercises(List.of(
                         PerformedExerciseDocument.builder()
                                 .exerciseTitle("Pushups")
@@ -211,7 +212,7 @@ class ReportIntegrationTest extends BaseIntegrationTest {
 
         final TestExecutionDocument testB = TestExecutionDocument.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(
                         PerformedExerciseDocument.builder()
                                 .exerciseTitle("Pushups")

@@ -18,6 +18,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -104,7 +105,7 @@ class SaveReportUseCaseImplTest {
     void shouldSaveTrendReportSuccessfully() {
         // Arrange
         final String athleteId = "athlete-123";
-        final LocalDateTime now = LocalDateTime.now();
+        final LocalDate now = LocalDate.now();
 
         final ReportSaveRequestDTO request = ReportSaveRequestDTO.builder()
                 .athleteId(athleteId)

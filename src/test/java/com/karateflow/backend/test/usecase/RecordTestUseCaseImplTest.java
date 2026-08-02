@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +52,7 @@ class RecordTestUseCaseImplTest {
         final String athleteId = "athlete-123";
         final CreateTestRequest request = CreateTestRequest.builder()
                 .athleteId(athleteId)
-                .executionDate(LocalDateTime.now())
+                .executionDate(LocalDate.now())
                 .exercises(List.of(
                         PerformedExerciseRequest.builder()
                                 .exerciseTitle("Squat")

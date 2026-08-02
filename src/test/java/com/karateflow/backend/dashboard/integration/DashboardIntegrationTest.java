@@ -19,6 +19,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,7 +62,7 @@ class DashboardIntegrationTest {
         athleteMongoRepository.save(AthleteDocument.builder().firstName("A2").lastName("B2").build());
         
         // Tests
-        LocalDateTime now = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
+        LocalDate now = LocalDate.now();
         for (int i = 0; i < 7; i++) {
             testExecutionMongoRepository.save(TestExecutionDocument.builder()
                     .athleteId("a1")
@@ -70,10 +71,11 @@ class DashboardIntegrationTest {
         }
 
         // Reports
+        LocalDateTime nowTime = LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
         for (int i = 0; i < 6; i++) {
             reportMongoRepository.save(ReportDocument.builder()
                     .athleteId("a1")
-                    .createdAt(now.minusHours(i))
+                    .createdAt(nowTime.minusHours(i))
                     .build());
         }
 
@@ -90,6 +92,6 @@ class DashboardIntegrationTest {
         assertThat(result.getRecentTests().get(0).getExecutionDate()).isEqualTo(now);
         
         assertThat(result.getRecentReports()).hasSize(5);
-        assertThat(result.getRecentReports().get(0).getCreatedAt()).isEqualTo(now);
+        assertThat(result.getRecentReports().get(0).getCreatedAt()).isEqualTo(nowTime);
     }
 }
